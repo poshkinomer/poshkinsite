@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<title>~/poshkin — home</title>
+<meta name="description" content="Poshkin Omer — Co-Founder of Fraser Hack Club, student at Riverside Secondary, Port Coquitlam BC.">
+<base target="_blank">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="prompt" href="index.html"><b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="active">home</a>
+      <a href="about.html">about</a>
+      <a href="events.html">events</a>
+      <a href="contact.html">contact</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="reveal">
+        <span class="sticker">Port Coquitlam, BC</span>
+        <div class="sec-label">whoami</div>
+        <h1>Poshkin<br><em class="acc">Omer</em></h1>
+        <div class="roles"><b>Co-Founder of Fraser Hack Club</b> · student at Riverside Secondary · youth coding advocate</div>
+        <div class="btn-row">
+          <a class="btn primary" href="https://fraser.hackclub.com/" target="_blank" rel="noopener">fraser.hackclub.com ↗</a>
+          <a class="btn" href="contact.html">./contact</a>
+        </div>
+      </div>
+      <!-- 📸 add a file named "headshot.jpg" next to this page, or change src below -->
+      <div class="shot reveal d1">
+        <div class="shot-frame">
+          <img src="headshot.jpg" alt="Poshkin Omer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+          <div class="shot-fallback">PO</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee" id="marquee">
+    <span><i>✦</i>fraser hack club</span><span><i>✦</i>youth coding community</span><span><i>✦</i>sd43 partner</span>
+    <span><i>✦</i>code for everyone</span><span><i>✦</i>tri-cities</span><span><i>✦</i>beginner friendly</span>
+  </div>
+</div>
+
+<main class="wrap">
+  <!-- SITEMAP -->
+  <section>
+    <div class="sec-label reveal">ls ~/pages</div>
+    <h2 class="reveal">Where to?</h2>
+    <div class="page-list">
+      <a href="about.html" class="reveal d1">
+        <span class="pl-path">/about.html</span>
+        <h3>About</h3>
+        <p>Who I am, what I do, and how Fraser Hack Club came to be.</p>
+        <span class="mono-tag">cd about →</span>
+      </a>
+      <a href="events.html" class="reveal d2">
+        <span class="pl-path">/events.html</span>
+        <h3>Events</h3>
+        <p>Workshops, game jams, and what's coming next.</p>
+        <span class="mono-tag">cd events →</span>
+      </a>
+      <a href="contact.html" class="reveal d3">
+        <span class="pl-path">/contact.html</span>
+        <h3>Contact</h3>
+        <p>Email me about events, partnerships, or anything code.</p>
+        <span class="mono-tag">cd contact →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-path"><b>➜</b> ~/poshkin $ ls pages/ <span style="color:var(--muted)">→</span>
+      <a href="index.html" style="color:var(--muted);text-decoration:none">index</a> ·
+      <a href="about.html" style="color:var(--muted);text-decoration:none">about</a> ·
+      <a href="events.html" style="color:var(--muted);text-decoration:none">events</a> ·
+      <a href="contact.html" style="color:var(--muted);text-decoration:none">contact</a>
+    </div>
+    <!-- ✂ SIGNATURE — copy this block onto any website you build -->
+    <div class="signature">
+      <span class="sig-label">Designed &amp; Built By</span>
+      <span class="sig-name">Poshkin Omer</span>
+    </div>
+    <!-- ✂ END SIGNATURE -->
+  </div>
+</footer>
+<script>
+/* mobile menu */
+const btn=document.getElementById('menuBtn'),links=document.getElementById('navLinks');
+btn.addEventListener('click',()=>links.classList.toggle('open'));
+/* scroll reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* marquee loop */
+const mq=document.getElementById('marquee');if(mq)mq.innerHTML+=mq.innerHTML;
+/* touch: tap to unblur upcoming event */
+document.querySelectorAll('.upcoming').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('tapped')));
+</script>
+
+</body>
+</html>
