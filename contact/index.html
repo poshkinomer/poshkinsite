@@ -3,76 +3,1571 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="../style.css">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 
 <title>Poshkin - Contact</title>
 <meta name="description" content="Contact Poshkin Omer — poshkinomer@gmail.com">
+
+<style>
+
+/* ==========================================
+   LIVE CHAT BUTTON
+========================================== */
+
+#chatButton {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 58px;
+  height: 58px;
+
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 50%;
+
+  background: #111;
+  color: #fff;
+
+  cursor: pointer;
+  z-index: 9998;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+
+  box-shadow: 0 10px 35px rgba(0,0,0,.35);
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    border-color .2s ease;
+}
+
+#chatButton:hover {
+  transform: translateY(-3px);
+  background: #191919;
+  border-color: rgba(255,255,255,.35);
+}
+
+#chatButton.active {
+  transform: rotate(90deg);
+}
+
+
+/* ==========================================
+   CHAT PANEL
+========================================== */
+
+#chatPanel {
+  position: fixed;
+
+  right: 24px;
+  bottom: 94px;
+
+  width: min(390px, calc(100vw - 32px));
+  height: min(620px, calc(100vh - 125px));
+
+  background: #0b0b0b;
+
+  border: 1px solid rgba(255,255,255,.14);
+
+  box-shadow: 0 25px 70px rgba(0,0,0,.55);
+
+  z-index: 9997;
+
+  display: flex;
+  flex-direction: column;
+
+  transform: translateX(calc(100% + 40px));
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    transform .3s cubic-bezier(.22,1,.36,1),
+    opacity .2s ease;
+}
+
+#chatPanel.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.chat-header {
+  padding: 18px 18px 15px;
+
+  border-bottom: 1px solid rgba(255,255,255,.09);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-title {
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .85rem;
+
+  letter-spacing: .05em;
+}
+
+.chat-status {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #8d8d8d;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .68rem;
+}
+
+.chat-status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #6dff8b;
+
+  box-shadow: 0 0 9px rgba(109,255,139,.6);
+}
+
+
+/* ==========================================
+   MESSAGES
+========================================== */
+
+#chatMessages {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  scrollbar-width: thin;
+}
+
+.chat-message {
+  max-width: 82%;
+
+  padding: 10px 12px;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .75rem;
+
+  line-height: 1.55;
+
+  word-wrap: break-word;
+}
+
+.chat-message.visitor {
+  align-self: flex-end;
+
+  background: #ededed;
+
+  color: #0a0a0a;
+}
+
+.chat-message.admin {
+  align-self: flex-start;
+
+  background: #181818;
+
+  color: #eee;
+
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.chat-message-time {
+  margin-top: 5px;
+
+  font-size: .58rem;
+
+  opacity: .5;
+}
+
+.chat-empty {
+  margin: auto;
+
+  text-align: center;
+
+  color: #666;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .7rem;
+
+  line-height: 1.7;
+}
+
+
+/* ==========================================
+   INTRO
+========================================== */
+
+#chatIntro {
+  padding: 18px;
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+#chatIntro p {
+  margin: 0 0 12px;
+
+  color: #8c8c8c;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .68rem;
+
+  line-height: 1.6;
+}
+
+#chatName {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 10px 11px;
+
+  background: #111;
+
+  border: 1px solid rgba(255,255,255,.12);
+
+  color: #fff;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .72rem;
+
+  outline: none;
+}
+
+#chatName:focus {
+  border-color: rgba(255,255,255,.3);
+}
+
+
+/* ==========================================
+   COMPOSER
+========================================== */
+
+#chatComposer {
+  padding: 12px;
+
+  border-top: 1px solid rgba(255,255,255,.09);
+
+  display: flex;
+
+  gap: 8px;
+}
+
+#chatInput {
+  flex: 1;
+
+  min-width: 0;
+
+  resize: none;
+
+  height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 11px;
+
+  background: #111;
+
+  border: 1px solid rgba(255,255,255,.12);
+
+  color: #fff;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .72rem;
+
+  outline: none;
+}
+
+#chatInput:focus {
+  border-color: rgba(255,255,255,.3);
+}
+
+#chatSend {
+  width: 48px;
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  background: #eee;
+
+  color: #080808;
+
+  cursor: pointer;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-weight: 700;
+
+  transition: .2s ease;
+}
+
+#chatSend:hover {
+  background: #fff;
+}
+
+#chatSend:disabled {
+  opacity: .4;
+
+  cursor: not-allowed;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+  #chatButton {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  #chatPanel {
+    right: 8px;
+    bottom: 86px;
+
+    width: calc(100vw - 16px);
+
+    height: calc(100vh - 105px);
+  }
+
+}
+
+</style>
 </head>
+
+
 <body>
+
+
+<!-- ==========================================
+     NAVIGATION
+========================================== -->
+
 <nav>
+
   <div class="nav-inner">
-    <a class="prompt" href="../"><b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span></a>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
+
+    <a class="prompt" href="../">
+      <b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span>
+    </a>
+
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      aria-label="Menu">
+
+      <span></span>
+      <span></span>
+
+    </button>
+
     <div class="nav-links" id="navLinks">
+
       <a href="../">home</a>
+
       <a href="../about/">about</a>
+
       <a href="../events/">events</a>
+
       <a href="./" class="active">contact</a>
+
     </div>
+
     <div class="nav-socials">
-      <a class="discord-nav" href="../discord/" aria-label="Discord" title="Discord"><img src="https://cdn.simpleicons.org/discord/5865F2" alt=""></a>
-      <a class="instagram-nav" href="https://www.instagram.com/its_poshkin?stkn=MXhmb3FkOTRzOW04dQ%3D%3D&amp;utm_source=qr" aria-label="Instagram" title="Instagram" target="_blank" rel="noopener noreferrer"><img src="https://cdn.simpleicons.org/instagram/E4405F" alt=""></a>
-        <a class="github-nav" href="https://github.com/poshkin15" aria-label="GitHub" title="GitHub" target="_blank" rel="noopener noreferrer"><img src="https://cdn.simpleicons.org/github/FFFFFF" alt=""></a>
+
+      <a
+        class="discord-nav"
+        href="../discord/"
+        aria-label="Discord"
+        title="Discord">
+
+        <img
+          src="https://cdn.simpleicons.org/discord/5865F2"
+          alt="">
+
+      </a>
+
+      <a
+        class="instagram-nav"
+        href="https://www.instagram.com/its_poshkin?stkn=MXhmb3FkOTRzOW04dQ%3D%3D&amp;utm_source=qr"
+        aria-label="Instagram"
+        title="Instagram"
+        target="_blank"
+        rel="noopener noreferrer">
+
+        <img
+          src="https://cdn.simpleicons.org/instagram/E4405F"
+          alt="">
+
+      </a>
+
+      <a
+        class="github-nav"
+        href="https://github.com/poshkin15"
+        aria-label="GitHub"
+        title="GitHub"
+        target="_blank"
+        rel="noopener noreferrer">
+
+        <img
+          src="https://cdn.simpleicons.org/github/FFFFFF"
+          alt="">
+
+      </a>
+
     </div>
+
   </div>
+
 </nav>
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
 
 <main class="wrap">
 
-  <section class="page-head reveal" style="text-align:center">
-    <div class="sec-label" style="justify-content:center">./contact --open</div>
-    <h1>Say <em class="acc">Hello</em></h1>
+  <section
+    class="page-head reveal"
+    style="text-align:center">
+
+    <div
+      class="sec-label"
+      style="justify-content:center">
+
+      ./contact --open
+
+    </div>
+
+    <h1>
+      Say <em class="acc">Hello</em>
+    </h1>
+
   </section>
 
+
   <section style="padding-top:0">
+
     <div class="contact-card reveal d1">
-      <div class="term"><b>➜</b> ~/poshkin $ mail -s "hello" <span class="out">poshkinomer@gmail.com</span></div>
-      <a class="mail-big" href="mailto:poshkinomer@gmail.com">poshkinomer@gmail.com</a>
-      <p style="color:var(--muted);margin-top:1.6rem;font-size:.95rem">Hack club events, school partnerships, or just a conversation about code — my inbox is open.</p>
-      <div class="contact-links">
-        <a class="btn primary" href="mailto:poshkinomer@gmail.com">send email ↗</a>
-        <a class="btn" href="https://fraser.hackclub.com/" target="_blank" rel="noopener">fraser.hackclub.com ↗</a>
+
+      <div class="term">
+
+        <b>➜</b>
+        ~/poshkin $ mail -s "hello"
+        <span class="out">
+          poshkinomer@gmail.com
+        </span>
+
       </div>
+
+      <a
+        class="mail-big"
+        href="mailto:poshkinomer@gmail.com">
+
+        poshkinomer@gmail.com
+
+      </a>
+
+      <p
+        style="color:var(--muted);margin-top:1.6rem;font-size:.95rem">
+
+        Hack club events, school partnerships,
+        or just a conversation about code —
+        my inbox is open.
+
+      </p>
+
+      <div class="contact-links">
+
+        <a
+          class="btn primary"
+          href="mailto:poshkinomer@gmail.com">
+
+          send email ↗
+
+        </a>
+
+        <a
+          class="btn"
+          href="https://fraser.hackclub.com/"
+          target="_blank"
+          rel="noopener">
+
+          fraser.hackclub.com ↗
+
+        </a>
+
+      </div>
+
     </div>
+
   </section>
 
 </main>
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
 <footer>
+
   <div class="foot-inner">
-    <div class="foot-path"><b>➜</b> ~/poshkin $ ls pages/ <span style="color:var(--muted)">→</span>
-      <a href="../" style="color:var(--muted);text-decoration:none">index</a> ·
-      <a href="../about/" style="color:var(--muted);text-decoration:none">about</a> ·
-      <a href="../events/" style="color:var(--muted);text-decoration:none">events</a> ·
-      <a href="./" style="color:var(--muted);text-decoration:none">contact</a>
+
+    <div class="foot-path">
+
+      <b>➜</b>
+      ~/poshkin $ ls pages/
+
+      <span style="color:var(--muted)">→</span>
+
+      <a
+        href="../"
+        style="color:var(--muted);text-decoration:none">
+
+        index
+
+      </a>
+      ·
+
+      <a
+        href="../about/"
+        style="color:var(--muted);text-decoration:none">
+
+        about
+
+      </a>
+      ·
+
+      <a
+        href="../events/"
+        style="color:var(--muted);text-decoration:none">
+
+        events
+
+      </a>
+      ·
+
+      <a
+        href="./"
+        style="color:var(--muted);text-decoration:none">
+
+        contact
+
+      </a>
+
     </div>
+
     <div class="signature">
-      <span class="sig-label">Designed &amp; Built By</span>
-      <span class="sig-name">Poshkin Omer</span>
+
+      <span class="sig-label">
+        Designed &amp; Built By
+      </span>
+
+      <span class="sig-name">
+        Poshkin Omer
+      </span>
+
     </div>
+
   </div>
+
 </footer>
+
+
+<!-- ==========================================
+     CHAT BUTTON
+========================================== -->
+
+<button
+  id="chatButton"
+  aria-label="Open live chat"
+  title="Live chat">
+
+  💬
+
+</button>
+
+
+<!-- ==========================================
+     CHAT PANEL
+========================================== -->
+
+<div id="chatPanel">
+
+  <div class="chat-header">
+
+    <div class="chat-title">
+      ~/poshkin/chat
+    </div>
+
+    <div class="chat-status">
+
+      <span class="chat-status-dot"></span>
+
+      live
+
+    </div>
+
+  </div>
+
+
+  <div id="chatIntro">
+
+    <p>
+
+      Send me a message directly.<br>
+      No account required.
+
+    </p>
+
+    <input
+      id="chatName"
+      type="text"
+      maxlength="80"
+      placeholder="your name (optional)"
+      autocomplete="off">
+
+  </div>
+
+
+  <div id="chatMessages">
+
+    <div class="chat-empty" id="chatEmpty">
+
+      No messages yet.<br>
+      Start the conversation ↓
+
+    </div>
+
+  </div>
+
+
+  <form id="chatComposer">
+
+    <textarea
+      id="chatInput"
+      maxlength="2000"
+      placeholder="type a message..."
+      rows="1"
+      autocomplete="off"></textarea>
+
+    <button
+      id="chatSend"
+      type="submit">
+
+      ↗
+
+    </button>
+
+  </form>
+
+</div>
+
+
+<!-- ==========================================
+     SUPABASE
+========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
 <script>
-const btn=document.getElementById('menuBtn'),links=document.getElementById('navLinks');
-btn.addEventListener('click',()=>links.classList.toggle('open'));
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-const mq=document.getElementById('marquee');if(mq)mq.innerHTML+=mq.innerHTML;
-document.querySelectorAll('.upcoming').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('tapped')));
+
+/* ==========================================
+   SUPABASE CONFIG
+========================================== */
+
+const SUPABASE_URL =
+  "https://zrxculnvhdnqvdhrfays.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_-iZ0ectVl2b38oSSuIUAXA_7sNYaQzA";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        storageKey: "poshkin-visitor-auth",
+        persistSession: true,
+        autoRefreshToken: true
+      }
+    }
+  );
+
+
+/* ==========================================
+   ELEMENTS
+========================================== */
+
+const chatButton =
+  document.getElementById("chatButton");
+
+const chatPanel =
+  document.getElementById("chatPanel");
+
+const chatMessages =
+  document.getElementById("chatMessages");
+
+const chatComposer =
+  document.getElementById("chatComposer");
+
+const chatInput =
+  document.getElementById("chatInput");
+
+const chatSend =
+  document.getElementById("chatSend");
+
+const chatName =
+  document.getElementById("chatName");
+
+
+/* ==========================================
+   STATE
+========================================== */
+
+let conversationId = null;
+
+let realtimeChannel = null;
+
+let chatReady = false;
+
+
+/* ==========================================
+   OPEN CHAT
+========================================== */
+
+chatButton.addEventListener(
+  "click",
+  async () => {
+
+    const isOpen =
+      chatPanel.classList.contains("open");
+
+
+    if (isOpen) {
+
+      chatPanel.classList.remove("open");
+
+      chatButton.classList.remove("active");
+
+      return;
+
+    }
+
+
+    chatPanel.classList.add("open");
+
+    chatButton.classList.add("active");
+
+    chatInput.focus();
+
+
+    if (!chatReady) {
+
+      await initializeChat();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+async function initializeChat() {
+
+  chatSend.disabled = true;
+
+
+  try {
+
+    /*
+     * Check for an existing visitor session.
+     */
+
+    let {
+      data: {
+        session
+      }
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    /*
+     * Create an anonymous account if
+     * this visitor doesn't have one yet.
+     */
+
+    if (!session) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInAnonymously();
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+      session = data.session;
+
+    }
+
+
+    /*
+     * Get visitor identity.
+     */
+
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    if (userError || !user) {
+
+      throw (
+        userError ||
+        new Error("Could not identify visitor.")
+      );
+
+    }
+
+
+    /*
+     * Find existing conversation.
+     */
+
+    const {
+      data: existingConversation,
+      error: conversationError
+    } =
+      await supabaseClient
+        .from("conversations")
+        .select("id, visitor_name")
+        .eq("visitor_id", user.id)
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    if (conversationError) {
+
+      throw conversationError;
+
+    }
+
+
+    /*
+     * Use existing conversation.
+     */
+
+    if (existingConversation) {
+
+      conversationId =
+        existingConversation.id;
+
+
+      if (
+        existingConversation.visitor_name
+      ) {
+
+        chatName.value =
+          existingConversation.visitor_name;
+
+      }
+
+    }
+
+
+    /*
+     * Otherwise create a conversation.
+     */
+
+    else {
+
+      const {
+        data: newConversation,
+        error: createError
+      } =
+        await supabaseClient
+          .from("conversations")
+          .insert({
+
+            visitor_id: user.id,
+
+            visitor_name:
+              chatName.value.trim() || null
+
+          })
+          .select("id")
+          .single();
+
+
+      if (createError) {
+
+        throw createError;
+
+      }
+
+
+      conversationId =
+        newConversation.id;
+
+    }
+
+
+    /*
+     * Load messages.
+     */
+
+    await loadMessages();
+
+
+    /*
+     * Listen for new messages.
+     */
+
+    subscribeToMessages();
+
+
+    chatReady = true;
+
+    chatSend.disabled = false;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Chat initialization error:",
+      error
+    );
+
+
+    showSystemMessage(
+      "Chat couldn't connect right now. Please try again."
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   LOAD MESSAGES
+========================================== */
+
+async function loadMessages() {
+
+  if (!conversationId) {
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("messages")
+      .select(
+        "id, sender, message, created_at"
+      )
+      .eq(
+        "conversation_id",
+        conversationId
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  chatMessages.innerHTML = "";
+
+
+  if (!data || data.length === 0) {
+
+    showEmptyState();
+
+    return;
+
+  }
+
+
+  data.forEach(
+    message => renderMessage(message)
+  );
+
+
+  scrollChatToBottom();
+
+}
+
+
+/* ==========================================
+   REALTIME
+========================================== */
+
+function subscribeToMessages() {
+
+  if (
+    realtimeChannel ||
+    !conversationId
+  ) {
+
+    return;
+
+  }
+
+
+  realtimeChannel =
+    supabaseClient
+
+      .channel(
+        "visitor-chat-" +
+        conversationId
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter:
+            "conversation_id=eq." +
+            conversationId
+        },
+        payload => {
+
+          const message =
+            payload.new;
+
+
+          /*
+           * Don't duplicate messages that
+           * were already rendered locally.
+           */
+
+          if (
+            document.querySelector(
+              '[data-message-id="' +
+              message.id +
+              '"]'
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          removeEmptyState();
+
+          renderMessage(message);
+
+          scrollChatToBottom();
+
+        }
+      )
+
+      .subscribe(
+        status => {
+
+          console.log(
+            "Chat realtime:",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+/* ==========================================
+   SEND MESSAGE
+========================================== */
+
+chatComposer.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const messageText =
+      chatInput.value.trim();
+
+
+    if (
+      !messageText ||
+      !conversationId
+    ) {
+
+      return;
+
+    }
+
+
+    chatSend.disabled = true;
+
+    chatInput.disabled = true;
+
+
+    try {
+
+      /*
+       * Save visitor name.
+       */
+
+      const name =
+        chatName.value.trim();
+
+
+      if (name) {
+
+        const {
+          error: nameError
+        } =
+          await supabaseClient
+            .from("conversations")
+            .update({
+
+              visitor_name: name,
+
+              updated_at:
+                new Date().toISOString()
+
+            })
+            .eq(
+              "id",
+              conversationId
+            );
+
+
+        if (nameError) {
+
+          throw nameError;
+
+        }
+
+      }
+
+
+      /*
+       * Insert message.
+       */
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .insert({
+
+            conversation_id:
+              conversationId,
+
+            sender: "visitor",
+
+            message: messageText
+
+          })
+          .select(
+            "id, sender, message, created_at"
+          )
+          .single();
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      /*
+       * Show message immediately.
+       */
+
+      removeEmptyState();
+
+      renderMessage(data);
+
+      scrollChatToBottom();
+
+      chatInput.value = "";
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Message send error:",
+        error
+      );
+
+
+      showSystemMessage(
+        "Message failed to send. Please try again."
+      );
+
+    }
+
+
+    chatInput.disabled = false;
+
+    chatSend.disabled = false;
+
+    chatInput.focus();
+
+  }
+);
+
+
+/* ==========================================
+   RENDER MESSAGE
+========================================== */
+
+function renderMessage(message) {
+
+  removeEmptyState();
+
+
+  const wrapper =
+    document.createElement("div");
+
+
+  wrapper.className =
+    "chat-message " +
+    (
+      message.sender === "admin"
+        ? "admin"
+        : "visitor"
+    );
+
+
+  wrapper.dataset.messageId =
+    message.id;
+
+
+  const text =
+    document.createElement("div");
+
+
+  text.textContent =
+    message.message;
+
+
+  const time =
+    document.createElement("div");
+
+
+  time.className =
+    "chat-message-time";
+
+
+  time.textContent =
+    formatTime(
+      message.created_at
+    );
+
+
+  wrapper.appendChild(text);
+
+  wrapper.appendChild(time);
+
+
+  chatMessages.appendChild(wrapper);
+
+}
+
+
+/* ==========================================
+   FORMAT TIME
+========================================== */
+
+function formatTime(timestamp) {
+
+  const date =
+    new Date(timestamp);
+
+
+  return date.toLocaleTimeString(
+    [],
+    {
+      hour: "numeric",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+function showEmptyState() {
+
+  chatMessages.innerHTML = `
+
+    <div
+      class="chat-empty"
+      id="chatEmpty">
+
+      No messages yet.<br>
+      Start the conversation ↓
+
+    </div>
+
+  `;
+
+}
+
+
+function removeEmptyState() {
+
+  const empty =
+    document.getElementById(
+      "chatEmpty"
+    );
+
+
+  if (empty) {
+
+    empty.remove();
+
+  }
+
+}
+
+
+/* ==========================================
+   SYSTEM MESSAGE
+========================================== */
+
+function showSystemMessage(text) {
+
+  chatMessages.innerHTML = "";
+
+
+  const message =
+    document.createElement("div");
+
+
+  message.className =
+    "chat-empty";
+
+
+  message.textContent =
+    text;
+
+
+  chatMessages.appendChild(message);
+
+}
+
+
+/* ==========================================
+   SCROLL
+========================================== */
+
+function scrollChatToBottom() {
+
+  requestAnimationFrame(
+    () => {
+
+      chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   ENTER TO SEND
+========================================== */
+
+chatInput.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+      chatComposer.requestSubmit();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   EXISTING SITE JAVASCRIPT
+========================================== */
+
+const btn =
+  document.getElementById(
+    "menuBtn"
+  );
+
+const links =
+  document.getElementById(
+    "navLinks"
+  );
+
+
+btn.addEventListener(
+  "click",
+  () => {
+
+    links.classList.toggle(
+      "open"
+    );
+
+  }
+);
+
+
+const io =
+  new IntersectionObserver(
+    es =>
+      es.forEach(
+        e => {
+
+          if (
+            e.isIntersecting
+          ) {
+
+            e.target.classList.add(
+              "visible"
+            );
+
+            io.unobserve(
+              e.target
+            );
+
+          }
+
+        }
+      ),
+    {
+      threshold: .1
+    }
+  );
+
+
+document
+  .querySelectorAll(".reveal")
+  .forEach(
+    el => io.observe(el)
+  );
+
+
+const mq =
+  document.getElementById(
+    "marquee"
+  );
+
+
+if (mq) {
+
+  mq.innerHTML +=
+    mq.innerHTML;
+
+}
+
+
+document
+  .querySelectorAll(".upcoming")
+  .forEach(
+    c =>
+      c.addEventListener(
+        "click",
+        () =>
+          c.classList.toggle(
+            "tapped"
+          )
+      )
+  );
+
 </script>
 
 </body>
