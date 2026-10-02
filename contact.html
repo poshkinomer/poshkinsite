@@ -1,0 +1,83 @@
+---
+permalink: /contact/
+---
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <title>~/poshkin — contact</title>
+    <meta name="description" content="Contact Poshkin Omer — poshkinomer@gmail.com">
+    <base target="_blank">
+    </head>
+    <body>
+    <nav>
+    <div class="nav-inner">
+        <a class="prompt" href="index.html"><b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span></a>
+        <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
+        <div class="nav-links" id="navLinks">
+        <a href="index.html">home</a>
+        <a href="about.html">about</a>
+        <a href="events.html">events</a>
+        <a href="contact.html" class="active">contact</a>
+        </div>
+    </div>
+    </nav>
+
+    <main class="wrap">
+
+    <section class="page-head reveal" style="text-align:center">
+        <div class="sec-label" style="justify-content:center">./contact --open</div>
+        <h1>Say <em class="acc">Hello</em></h1>
+    </section>
+
+    <section style="padding-top:0">
+        <div class="contact-card reveal d1">
+        <div class="term"><b>➜</b> ~/poshkin $ mail -s "hello" <span class="out">poshkinomer@gmail.com</span></div>
+        <a class="mail-big" href="mailto:poshkinomer@gmail.com">poshkinomer@gmail.com</a>
+        <p style="color:var(--muted);margin-top:1.6rem;font-size:.95rem">Hack club events, school partnerships, or just a conversation about code — my inbox is open.</p>
+        <div class="contact-links">
+            <a class="btn primary" href="mailto:poshkinomer@gmail.com">send email ↗</a>
+            <a class="btn" href="https://fraser.hackclub.com/" target="_blank" rel="noopener">fraser.hackclub.com ↗</a>
+        </div>
+        </div>
+    </section>
+
+    </main>
+    <footer>
+    <div class="foot-inner">
+        <div class="foot-path"><b>➜</b> ~/poshkin $ ls pages/ <span style="color:var(--muted)">→</span>
+        <a href="index.html" style="color:var(--muted);text-decoration:none">index</a> ·
+        <a href="about.html" style="color:var(--muted);text-decoration:none">about</a> ·
+        <a href="events.html" style="color:var(--muted);text-decoration:none">events</a> ·
+        <a href="contact.html" style="color:var(--muted);text-decoration:none">contact</a>
+        </div>
+        <!-- ✂ SIGNATURE — copy this block onto any website you build -->
+        <div class="signature">
+        <span class="sig-label">Designed &amp; Built By</span>
+        <span class="sig-name">Poshkin Omer</span>
+        </div>
+        <!-- ✂ END SIGNATURE -->
+    </div>
+    </footer>
+    <script>
+    /* mobile menu */
+    const btn=document.getElementById('menuBtn'),links=document.getElementById('navLinks');
+    btn.addEventListener('click',()=>links.classList.toggle('open'));
+    /* scroll reveal */
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    /* marquee loop */
+    const mq=document.getElementById('marquee');if(mq)mq.innerHTML+=mq.innerHTML;
+    /* touch: tap to unblur upcoming event */
+    document.querySelectorAll('.upcoming').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('tapped')));
+    </script>
+
+    </body>
+    </html>
