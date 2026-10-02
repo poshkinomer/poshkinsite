@@ -1,714 +1,2110 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
 <title>Poshkin — Chat Admin</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<link
+  rel="preconnect"
+  href="https://fonts.googleapis.com"
+>
 
-<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link
+  rel="preconnect"
+  href="https://fonts.gstatic.com"
+  crossorigin
+>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap"
+  rel="stylesheet"
+>
+
+<link
+  href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap"
+  rel="stylesheet"
+>
+
 
 <style>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
 :root {
+
   --bg: #080808;
   --panel: #101010;
   --panel-2: #151515;
   --border: #292929;
+
   --text: #f2f2f2;
   --muted: #858585;
+
   --accent: #ffffff;
+
   --green: #65d68b;
   --danger: #ff6565;
+
 }
+
+
+/* =========================================================
+   RESET
+========================================================= */
 
 * {
   box-sizing: border-box;
 }
 
+
 html,
 body {
+
   margin: 0;
   padding: 0;
+
   width: 100%;
   height: 100%;
+
 }
+
 
 body {
+
   background: var(--bg);
+
   color: var(--text);
-  font-family: "General Sans", sans-serif;
+
+  font-family:
+    "General Sans",
+    sans-serif;
+
 }
 
-/* =========================
+
+/* =========================================================
    LOGIN
-========================= */
+========================================================= */
 
 .login-screen {
+
   position: fixed;
+
   inset: 0;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   background: var(--bg);
+
   z-index: 100;
+
 }
+
 
 .login-box {
-  width: min(420px, calc(100% - 40px));
-  border: 1px solid var(--border);
-  background: var(--panel);
+
+  width:
+    min(
+      420px,
+      calc(100% - 40px)
+    );
+
+  border:
+    1px solid var(--border);
+
+  background:
+    var(--panel);
+
   padding: 32px;
+
 }
+
 
 .login-terminal {
-  font-family: "JetBrains Mono", monospace;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
   font-size: 13px;
+
   color: var(--muted);
+
   margin-bottom: 24px;
+
 }
+
 
 .login-terminal b {
+
   color: var(--text);
+
 }
+
 
 .login-box h1 {
-  margin: 0 0 8px;
-  font-family: "Clash Display", sans-serif;
+
+  margin:
+    0 0 8px;
+
+  font-family:
+    "Clash Display",
+    sans-serif;
+
   font-size: 28px;
+
 }
+
 
 .login-box p {
+
   color: var(--muted);
+
   margin-bottom: 24px;
+
 }
+
 
 .input {
+
   width: 100%;
-  padding: 13px 14px;
+
+  padding:
+    13px 14px;
+
   margin-bottom: 12px;
-  border: 1px solid var(--border);
-  background: #0b0b0b;
-  color: var(--text);
-  font-family: "JetBrains Mono", monospace;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    #0b0b0b;
+
+  color:
+    var(--text);
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
   outline: none;
+
 }
+
 
 .input:focus {
+
   border-color: #555;
+
 }
+
 
 .btn {
+
   width: 100%;
+
   padding: 13px;
-  border: 1px solid var(--border);
-  background: var(--text);
+
+  border:
+    1px solid var(--border);
+
+  background:
+    var(--text);
+
   color: #000;
+
   font-weight: 600;
+
   cursor: pointer;
+
 }
+
 
 .btn:hover {
+
   opacity: .85;
+
 }
+
+
+.btn:disabled {
+
+  opacity: .5;
+
+  cursor: wait;
+
+}
+
 
 .login-error {
+
   display: none;
+
   margin-top: 14px;
-  color: var(--danger);
+
+  color:
+    var(--danger);
+
   font-size: 13px;
+
 }
 
-/* =========================
+
+/* =========================================================
    APP
-========================= */
+========================================================= */
 
 .app {
+
   display: none;
+
   height: 100vh;
+
   width: 100%;
+
 }
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .sidebar {
+
   width: 320px;
+
   min-width: 320px;
-  border-right: 1px solid var(--border);
-  background: var(--panel);
+
+  border-right:
+    1px solid var(--border);
+
+  background:
+    var(--panel);
+
   display: flex;
+
   flex-direction: column;
+
 }
+
 
 .sidebar-head {
+
   height: 72px;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--border);
+
+  padding:
+    0 20px;
+
+  border-bottom:
+    1px solid var(--border);
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
 }
+
 
 .logo {
-  font-family: "JetBrains Mono", monospace;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
   font-size: 14px;
+
 }
+
 
 .logo b {
-  color: var(--text);
+
+  color:
+    var(--text);
+
 }
+
 
 .status {
+
   display: flex;
+
   align-items: center;
+
   gap: 7px;
-  color: var(--muted);
+
+  color:
+    var(--muted);
+
   font-size: 12px;
+
 }
+
 
 .status-dot {
+
   width: 7px;
+
   height: 7px;
-  background: var(--green);
+
+  background:
+    var(--green);
+
   border-radius: 50%;
+
 }
+
 
 .search {
+
   padding: 14px;
-  border-bottom: 1px solid var(--border);
+
+  border-bottom:
+    1px solid var(--border);
+
 }
+
 
 .search input {
+
   width: 100%;
+
   padding: 10px;
-  border: 1px solid var(--border);
-  background: #0b0b0b;
-  color: var(--text);
+
+  border:
+    1px solid var(--border);
+
+  background:
+    #0b0b0b;
+
+  color:
+    var(--text);
+
   outline: none;
+
 }
+
 
 .conversations {
+
   flex: 1;
+
   overflow-y: auto;
+
 }
 
+
 .conversation {
-  padding: 17px 20px;
-  border-bottom: 1px solid var(--border);
+
+  padding:
+    17px 20px;
+
+  border-bottom:
+    1px solid var(--border);
+
   cursor: pointer;
+
 }
+
 
 .conversation:hover,
 .conversation.active {
-  background: var(--panel-2);
+
+  background:
+    var(--panel-2);
+
 }
+
 
 .conversation-top {
+
   display: flex;
+
   justify-content: space-between;
+
   gap: 10px;
+
 }
+
 
 .visitor {
-  font-family: "JetBrains Mono", monospace;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
   font-size: 13px;
+
 }
+
 
 .time {
-  color: var(--muted);
+
+  color:
+    var(--muted);
+
   font-size: 11px;
+
 }
 
+
 .preview {
+
   margin-top: 7px;
-  color: var(--muted);
+
+  color:
+    var(--muted);
+
   font-size: 13px;
 
   white-space: nowrap;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
+
 }
 
-.unread {
-  display: inline-flex;
-  min-width: 18px;
-  height: 18px;
-  align-items: center;
-  justify-content: center;
-  background: var(--text);
-  color: #000;
-  border-radius: 50%;
-  font-size: 10px;
-  margin-left: 5px;
-}
 
-/* =========================
+/* =========================================================
    CHAT
-========================= */
+========================================================= */
 
 .chat {
+
   flex: 1;
+
   display: flex;
+
   flex-direction: column;
+
   min-width: 0;
+
 }
+
 
 .chat-head {
+
   height: 72px;
-  border-bottom: 1px solid var(--border);
+
+  border-bottom:
+    1px solid var(--border);
+
   display: flex;
+
   align-items: center;
-  padding: 0 25px;
+
+  padding:
+    0 25px;
+
 }
+
 
 .chat-title {
-  font-family: "JetBrains Mono", monospace;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
 }
+
 
 .chat-title small {
+
   display: block;
-  color: var(--muted);
+
+  color:
+    var(--muted);
+
   margin-top: 4px;
-  font-family: "General Sans", sans-serif;
+
+  font-family:
+    "General Sans",
+    sans-serif;
+
   font-size: 12px;
+
 }
+
 
 .messages {
+
   flex: 1;
+
   overflow-y: auto;
+
   padding: 30px;
+
 }
+
 
 .empty {
+
   height: 100%;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  color: var(--muted);
-  font-family: "JetBrains Mono", monospace;
+
+  color:
+    var(--muted);
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
   text-align: center;
+
 }
+
 
 .message {
+
   max-width: 70%;
+
   margin-bottom: 18px;
+
 }
+
 
 .message.visitor {
+
   margin-right: auto;
+
 }
+
 
 .message.admin {
+
   margin-left: auto;
+
   text-align: right;
+
 }
+
 
 .message-bubble {
+
   display: inline-block;
-  padding: 12px 15px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+
+  padding:
+    12px 15px;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    var(--panel);
+
   text-align: left;
+
   line-height: 1.5;
+
+  word-break: break-word;
+
 }
 
-.message.admin .message-bubble {
-  background: var(--text);
+
+.message.admin
+.message-bubble {
+
+  background:
+    var(--text);
+
   color: #000;
-  border-color: var(--text);
+
+  border-color:
+    var(--text);
+
 }
+
 
 .message-meta {
-  color: var(--muted);
+
+  color:
+    var(--muted);
+
   font-size: 10px;
+
   margin-top: 5px;
+
 }
+
 
 .composer {
-  border-top: 1px solid var(--border);
+
+  border-top:
+    1px solid var(--border);
+
   padding: 15px;
+
   display: flex;
+
   gap: 10px;
+
 }
+
 
 .composer textarea {
+
   flex: 1;
+
   resize: none;
+
   height: 48px;
+
   padding: 14px;
-  border: 1px solid var(--border);
-  background: #0b0b0b;
-  color: var(--text);
-  font-family: "General Sans", sans-serif;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    #0b0b0b;
+
+  color:
+    var(--text);
+
+  font-family:
+    "General Sans",
+    sans-serif;
+
   outline: none;
+
 }
+
 
 .send {
+
   width: 90px;
-  border: 1px solid var(--border);
-  background: var(--text);
+
+  border:
+    1px solid var(--border);
+
+  background:
+    var(--text);
+
   color: #000;
+
   cursor: pointer;
+
   font-weight: 600;
+
 }
+
 
 .send:hover {
+
   opacity: .85;
+
 }
 
-/* =========================
+
+.send:disabled {
+
+  opacity: .5;
+
+  cursor: wait;
+
+}
+
+
+/* =========================================================
    MOBILE
-========================= */
+========================================================= */
 
 @media (max-width: 700px) {
 
   .sidebar {
+
     width: 100%;
+
     min-width: 100%;
+
   }
+
 
   .chat {
+
     display: none;
+
   }
 
-  .app.chat-open .sidebar {
+
+  .app.chat-open
+  .sidebar {
+
     display: none;
+
   }
 
-  .app.chat-open .chat {
+
+  .app.chat-open
+  .chat {
+
     display: flex;
+
   }
+
 
   .messages {
+
     padding: 20px;
+
   }
 
+
   .message {
+
     max-width: 85%;
+
   }
+
 }
+
 </style>
 
 </head>
 
+
 <body>
 
-<!-- LOGIN -->
 
-<div class="login-screen" id="loginScreen">
+<!-- =======================================================
+     LOGIN SCREEN
+======================================================= -->
+
+<div
+  class="login-screen"
+  id="loginScreen"
+>
 
   <div class="login-box">
 
-```
-<div class="login-terminal">
-  <b>➜</b> ~/poshkin/admin $ authenticate
-</div>
+    <div class="login-terminal">
 
-<h1>Chat Admin</h1>
+      <b>➜</b>
+      ~/poshkin/admin $ authenticate
 
-<p>
-  Sign in to access visitor conversations.
-</p>
+    </div>
 
-<input
-  class="input"
-  id="email"
-  type="email"
-  placeholder="admin email"
-  autocomplete="username"
->
 
-<input
-  class="input"
-  id="password"
-  type="password"
-  placeholder="password"
-  autocomplete="current-password"
->
+    <h1>
+      Chat Admin
+    </h1>
 
-<button class="btn" id="loginBtn">
-  sign in →
-</button>
 
-<div class="login-error" id="loginError">
-  Invalid login.
-</div>
-```
+    <p>
+      Sign in to access visitor conversations.
+    </p>
+
+
+    <input
+      class="input"
+      id="email"
+      type="email"
+      placeholder="admin email"
+      autocomplete="username"
+    >
+
+
+    <input
+      class="input"
+      id="password"
+      type="password"
+      placeholder="password"
+      autocomplete="current-password"
+    >
+
+
+    <button
+      class="btn"
+      id="loginBtn"
+      type="button"
+    >
+
+      sign in →
+
+    </button>
+
+
+    <div
+      class="login-error"
+      id="loginError"
+    >
+
+      Invalid login.
+
+    </div>
 
   </div>
 
 </div>
 
-<!-- ADMIN APP -->
 
-<div class="app" id="app">
 
-  <!-- CONVERSATIONS -->
+<!-- =======================================================
+     ADMIN APP
+======================================================= -->
+
+<div
+  class="app"
+  id="app"
+>
+
+
+  <!-- SIDEBAR -->
 
   <aside class="sidebar">
 
-```
-<div class="sidebar-head">
 
-  <div class="logo">
-    <b>➜</b> ~/poshkin/chat
-  </div>
+    <div class="sidebar-head">
 
-  <div class="status">
-    <span class="status-dot"></span>
-    online
-  </div>
+      <div class="logo">
 
-</div>
+        <b>➜</b>
+        ~/poshkin/chat
 
-<div class="search">
-  <input
-    type="search"
-    id="search"
-    placeholder="search conversations..."
-  >
-</div>
+      </div>
 
-<div class="conversations" id="conversations">
 
-  <!-- Conversations will be inserted here -->
+      <div class="status">
 
-  <div class="empty">
-    No conversations yet.
-  </div>
+        <span class="status-dot"></span>
 
-</div>
-```
+        online
+
+      </div>
+
+    </div>
+
+
+    <div class="search">
+
+      <input
+        type="search"
+        id="search"
+        placeholder="search conversations..."
+      >
+
+    </div>
+
+
+    <div
+      class="conversations"
+      id="conversations"
+    >
+
+      <div class="empty">
+
+        No conversations yet.
+
+      </div>
+
+    </div>
+
 
   </aside>
+
+
 
   <!-- CHAT -->
 
   <main class="chat">
 
-```
-<header class="chat-head">
 
-  <div class="chat-title" id="chatTitle">
-    Select a conversation
+    <header class="chat-head">
 
-    <small id="chatStatus">
-      Choose a visitor from the left.
-    </small>
-  </div>
+      <div
+        class="chat-title"
+        id="chatTitle"
+      >
 
-</header>
+        Select a conversation
 
+        <small id="chatStatus">
 
-<section class="messages" id="messages">
+          Choose a visitor from the left.
 
-  <div class="empty">
-    ➜ ~/poshkin/chat $<br>
-    select conversation_
-  </div>
+        </small>
 
-</section>
+      </div>
+
+    </header>
 
 
-<form class="composer" id="composer">
+    <section
+      class="messages"
+      id="messages"
+    >
 
-  <textarea
-    id="messageInput"
-    placeholder="type a reply..."
-    disabled
-  ></textarea>
+      <div class="empty">
 
-  <button
-    class="send"
-    type="submit"
-    disabled
-    id="sendBtn"
-  >
-    send →
-  </button>
+        ➜ ~/poshkin/chat $<br>
+        select conversation_
 
-</form>
-```
+      </div>
+
+    </section>
+
+
+    <form
+      class="composer"
+      id="composer"
+    >
+
+      <textarea
+        id="messageInput"
+        placeholder="type a reply..."
+        disabled
+      ></textarea>
+
+
+      <button
+        class="send"
+        id="sendBtn"
+        type="submit"
+        disabled
+      >
+
+        send →
+
+      </button>
+
+    </form>
+
 
   </main>
 
 </div>
 
+
+
+<!-- =======================================================
+     SUPABASE
+======================================================= -->
+
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
 <script>
 
-/*
-===========================================================
-  TEMPORARY ADMIN INTERFACE
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
 
-  Supabase authentication and realtime messaging will be
-  connected here.
-
-  DO NOT put your Supabase service-role/private key here.
-===========================================================
-*/
+const SUPABASE_URL =
+  "https://zrxculnvhdnqvdhrfays.supabase.co";
 
 
-const loginScreen = document.getElementById("loginScreen");
-const app = document.getElementById("app");
-
-const loginBtn = document.getElementById("loginBtn");
-const loginError = document.getElementById("loginError");
-
-const conversations = document.getElementById("conversations");
-const messages = document.getElementById("messages");
-
-const chatTitle = document.getElementById("chatTitle");
-const chatStatus = document.getElementById("chatStatus");
-
-const composer = document.getElementById("composer");
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-
-let selectedConversation = null;
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_-iZ0ectVl2b38oSSuIUAXA_7sNYaQzA";
 
 
-/*
------------------------------------------------------------
-  LOGIN
------------------------------------------------------------
+const db =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-  This is only a placeholder.
 
-  We will replace this with Supabase Auth.
-*/
+/* =========================================================
+   DOM
+========================================================= */
 
-loginBtn.addEventListener("click", () => {
+const loginScreen =
+  document.getElementById(
+    "loginScreen"
+  );
 
-  loginError.style.display = "none";
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+const app =
+  document.getElementById(
+    "app"
+  );
 
-  if (email !== "omerposhkin31@gmail.com" || password !== "Parsa@2014") {
 
-    loginError.textContent = "Invalid email or password.";
-    loginError.style.display = "block";
+const loginBtn =
+  document.getElementById(
+    "loginBtn"
+  );
+
+
+const loginError =
+  document.getElementById(
+    "loginError"
+  );
+
+
+const conversationsEl =
+  document.getElementById(
+    "conversations"
+  );
+
+
+const messagesEl =
+  document.getElementById(
+    "messages"
+  );
+
+
+const chatTitle =
+  document.getElementById(
+    "chatTitle"
+  );
+
+
+const chatStatus =
+  document.getElementById(
+    "chatStatus"
+  );
+
+
+const composer =
+  document.getElementById(
+    "composer"
+  );
+
+
+const messageInput =
+  document.getElementById(
+    "messageInput"
+  );
+
+
+const sendBtn =
+  document.getElementById(
+    "sendBtn"
+  );
+
+
+const searchInput =
+  document.getElementById(
+    "search"
+  );
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let selectedConversation =
+  null;
+
+
+let conversationsData =
+  [];
+
+
+let conversationsChannel =
+  null;
+
+
+let messagesChannel =
+  null;
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+loginBtn.addEventListener(
+  "click",
+  async () => {
+
+    loginError.style.display =
+      "none";
+
+
+    const email =
+      document
+        .getElementById("email")
+        .value
+        .trim();
+
+
+    const password =
+      document
+        .getElementById("password")
+        .value;
+
+
+    if (!email || !password) {
+
+      loginError.textContent =
+        "Enter your email and password.";
+
+      loginError.style.display =
+        "block";
+
+      return;
+
+    }
+
+
+    loginBtn.disabled =
+      true;
+
+
+    loginBtn.textContent =
+      "signing in...";
+
+
+    const {
+      error
+    } =
+      await db.auth.signInWithPassword({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+    if (error) {
+
+      console.error(
+        "Login error:",
+        error
+      );
+
+
+      loginError.textContent =
+        error.message;
+
+
+      loginError.style.display =
+        "block";
+
+
+      loginBtn.disabled =
+        false;
+
+
+      loginBtn.textContent =
+        "sign in →";
+
+
+      return;
+
+    }
+
+
+    await startAdmin();
+
+  }
+);
+
+
+/* =========================================================
+   START ADMIN
+========================================================= */
+
+async function startAdmin() {
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await db.auth.getUser();
+
+
+  if (!user) {
 
     return;
+
   }
 
-  /*
-    TEMPORARY:
 
-    This currently lets you into the dashboard.
-
-    DO NOT use this as real authentication.
-
-    Supabase Auth will replace this section.
-  */
-
-  loginScreen.style.display = "none";
-  app.style.display = "flex";
-
-});
+  loginScreen.style.display =
+    "none";
 
 
-/*
------------------------------------------------------------
-  SELECT CONVERSATION
------------------------------------------------------------
-*/
+  app.style.display =
+    "flex";
 
-function openConversation(id, visitorName) {
 
-  selectedConversation = id;
+  await loadConversations();
 
-  chatTitle.childNodes[0].textContent =
-    visitorName + " ";
 
-  chatStatus.textContent =
-    "Visitor conversation";
-
-  messageInput.disabled = false;
-  sendBtn.disabled = false;
-
-  /*
-    Messages will be loaded from Supabase here.
-  */
-
-  messages.innerHTML = `
-    <div class="empty">
-      No messages loaded yet.
-    </div>
-  `;
+  setupRealtime();
 
 }
 
 
-/*
------------------------------------------------------------
-  SEND MESSAGE
------------------------------------------------------------
-*/
+/* =========================================================
+   LOAD CONVERSATIONS
+========================================================= */
 
-composer.addEventListener("submit", (event) => {
+async function loadConversations() {
 
-  event.preventDefault();
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("conversations")
+      .select("*")
+      .order(
+        "updated_at",
+        {
+          ascending: false
+        }
+      );
 
-  const message = messageInput.value.trim();
 
-  if (!message || !selectedConversation) {
+  if (error) {
+
+    console.error(
+      "Conversation error:",
+      error
+    );
+
+
+    conversationsEl.innerHTML = `
+
+      <div class="empty">
+
+        Could not load conversations.
+
+        <br><br>
+
+        ${escapeHtml(
+          error.message
+        )}
+
+      </div>
+
+    `;
+
+
     return;
+
   }
 
+
+  conversationsData =
+    data || [];
+
+
+  renderConversations();
+
+}
+
+
+/* =========================================================
+   RENDER CONVERSATIONS
+========================================================= */
+
+function renderConversations() {
+
+  const query =
+    searchInput.value
+      .toLowerCase()
+      .trim();
+
+
+  const filtered =
+    conversationsData.filter(
+      conversation => {
+
+        const name =
+          conversation.visitor_name ||
+          "Anonymous visitor";
+
+
+        return name
+          .toLowerCase()
+          .includes(query);
+
+      }
+    );
+
+
+  if (!filtered.length) {
+
+    conversationsEl.innerHTML = `
+
+      <div class="empty">
+
+        No conversations yet.
+
+      </div>
+
+    `;
+
+
+    return;
+
+  }
+
+
+  conversationsEl.innerHTML =
+    "";
+
+
+  filtered.forEach(
+    conversation => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+
+      item.className =
+        "conversation";
+
+
+      if (
+        selectedConversation ===
+        conversation.id
+      ) {
+
+        item.classList.add(
+          "active"
+        );
+
+      }
+
+
+      const name =
+        conversation.visitor_name ||
+        "Anonymous visitor";
+
+
+      const date =
+        conversation.updated_at ||
+        conversation.created_at;
+
+
+      const time =
+        new Date(date)
+          .toLocaleString();
+
+
+      item.innerHTML = `
+
+        <div class="conversation-top">
+
+          <span class="visitor">
+
+            ${escapeHtml(name)}
+
+          </span>
+
+
+          <span class="time">
+
+            ${escapeHtml(time)}
+
+          </span>
+
+        </div>
+
+
+        <div class="preview">
+
+          Visitor chat
+
+        </div>
+
+      `;
+
+
+      item.addEventListener(
+        "click",
+        () => {
+
+          openConversation(
+            conversation.id,
+            name
+          );
+
+        }
+      );
+
+
+      conversationsEl.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   OPEN CONVERSATION
+========================================================= */
+
+async function openConversation(
+  id,
+  visitorName
+) {
+
+  selectedConversation =
+    id;
+
+
+  chatTitle.childNodes[0]
+    .textContent =
+      visitorName + " ";
+
+
+  chatStatus.textContent =
+    "Visitor conversation";
+
+
+  messageInput.disabled =
+    false;
+
+
+  sendBtn.disabled =
+    false;
+
+
+  renderConversations();
+
+
+  messagesEl.innerHTML = `
+
+    <div class="empty">
+
+      Loading messages...
+
+    </div>
+
+  `;
+
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("messages")
+      .select("*")
+      .eq(
+        "conversation_id",
+        id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Messages error:",
+      error
+    );
+
+
+    messagesEl.innerHTML = `
+
+      <div class="empty">
+
+        Could not load messages.
+
+        <br><br>
+
+        ${escapeHtml(
+          error.message
+        )}
+
+      </div>
+
+    `;
+
+
+    return;
+
+  }
+
+
+  renderMessages(
+    data || []
+  );
+
+}
+
+
+/* =========================================================
+   RENDER MESSAGES
+========================================================= */
+
+function renderMessages(
+  messageList
+) {
+
+  messagesEl.innerHTML =
+    "";
+
+
+  if (!messageList.length) {
+
+    messagesEl.innerHTML = `
+
+      <div class="empty">
+
+        No messages yet.
+
+      </div>
+
+    `;
+
+
+    return;
+
+  }
+
+
+  messageList.forEach(
+    message => {
+
+      addMessageToScreen(
+        message
+      );
+
+    }
+  );
+
+
+  scrollToBottom();
+
+}
+
+
+/* =========================================================
+   ADD MESSAGE
+========================================================= */
+
+function addMessageToScreen(
+  message
+) {
+
   /*
-    Supabase message insertion will go here.
+     Prevent duplicate messages.
   */
 
-  messageInput.value = "";
-
-});
-
-
-/*
------------------------------------------------------------
-  SEARCH
------------------------------------------------------------
-*/
-
-document.getElementById("search").addEventListener("input", function() {
-
-  const query = this.value.toLowerCase();
-
-  document.querySelectorAll(".conversation").forEach(item => {
-
-    const text = item.textContent.toLowerCase();
-
-    item.style.display =
-      text.includes(query) ? "" : "none";
-
-  });
-
-});
+  const existing =
+    document.querySelector(
+      `[data-message-id="${message.id}"]`
+    );
 
 
-/*
------------------------------------------------------------
-  ENTER TO SEND
------------------------------------------------------------
-*/
+  if (existing) {
 
-messageInput.addEventListener("keydown", (event) => {
+    return;
 
-  if (event.key === "Enter" && !event.shiftKey) {
+  }
+
+
+  const wrapper =
+    document.createElement(
+      "div"
+    );
+
+
+  wrapper.className =
+    `message ${message.sender}`;
+
+
+  wrapper.dataset.messageId =
+    message.id;
+
+
+  const time =
+    new Date(
+      message.created_at
+    ).toLocaleTimeString(
+      [],
+      {
+        hour: "numeric",
+        minute: "2-digit"
+      }
+    );
+
+
+  wrapper.innerHTML = `
+
+    <div class="message-bubble">
+
+      ${escapeHtml(
+        message.message
+      )}
+
+    </div>
+
+
+    <div class="message-meta">
+
+      ${
+        message.sender === "admin"
+          ? "you"
+          : "visitor"
+      }
+
+      ·
+
+      ${escapeHtml(time)}
+
+    </div>
+
+  `;
+
+
+  messagesEl.appendChild(
+    wrapper
+  );
+
+}
+
+
+/* =========================================================
+   SEND ADMIN MESSAGE
+========================================================= */
+
+composer.addEventListener(
+  "submit",
+  async event => {
 
     event.preventDefault();
 
-    composer.requestSubmit();
+
+    const message =
+      messageInput.value.trim();
+
+
+    if (
+      !message ||
+      !selectedConversation
+    ) {
+
+      return;
+
+    }
+
+
+    sendBtn.disabled =
+      true;
+
+
+    const {
+      error
+    } =
+      await db
+        .from("messages")
+        .insert({
+
+          conversation_id:
+            selectedConversation,
+
+          sender:
+            "admin",
+
+          message:
+            message
+
+        });
+
+
+    if (error) {
+
+      console.error(
+        "Send error:",
+        error
+      );
+
+
+      alert(
+        "Could not send message:\n\n" +
+        error.message
+      );
+
+
+      sendBtn.disabled =
+        false;
+
+
+      return;
+
+    }
+
+
+    /*
+       Move this conversation
+       to the top of the list.
+    */
+
+    const {
+      error:
+        updateError
+    } =
+      await db
+        .from("conversations")
+        .update({
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          selectedConversation
+        );
+
+
+    if (updateError) {
+
+      console.error(
+        "Update error:",
+        updateError
+      );
+
+    }
+
+
+    messageInput.value =
+      "";
+
+
+    sendBtn.disabled =
+      false;
+
+
+    messageInput.focus();
+
+  }
+);
+
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+function setupRealtime() {
+
+  /*
+     Remove old channels if they exist.
+  */
+
+  if (
+    conversationsChannel
+  ) {
+
+    db.removeChannel(
+      conversationsChannel
+    );
 
   }
 
-});
+
+  if (
+    messagesChannel
+  ) {
+
+    db.removeChannel(
+      messagesChannel
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     CONVERSATIONS
+  ------------------------------------------------------- */
+
+  conversationsChannel =
+    db
+      .channel(
+        "admin-conversations"
+      )
+      .on(
+        "postgres_changes",
+        {
+
+          event: "*",
+
+          schema: "public",
+
+          table: "conversations"
+
+        },
+        async payload => {
+
+          console.log(
+            "Conversation update:",
+            payload
+          );
+
+
+          await loadConversations();
+
+        }
+      )
+      .subscribe(
+        status => {
+
+          console.log(
+            "Conversation realtime:",
+            status
+          );
+
+        }
+      );
+
+
+  /* -------------------------------------------------------
+     MESSAGES
+  ------------------------------------------------------- */
+
+  messagesChannel =
+    db
+      .channel(
+        "admin-messages"
+      )
+      .on(
+        "postgres_changes",
+        {
+
+          event: "INSERT",
+
+          schema: "public",
+
+          table: "messages"
+
+        },
+        payload => {
+
+          console.log(
+            "New message:",
+            payload.new
+          );
+
+
+          const message =
+            payload.new;
+
+
+          if (
+            selectedConversation ===
+            message.conversation_id
+          ) {
+
+            addMessageToScreen(
+              message
+            );
+
+
+            scrollToBottom();
+
+          }
+
+
+          loadConversations();
+
+        }
+      )
+      .subscribe(
+        status => {
+
+          console.log(
+            "Message realtime:",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchInput.addEventListener(
+  "input",
+  () => {
+
+    renderConversations();
+
+  }
+);
+
+
+/* =========================================================
+   ENTER TO SEND
+========================================================= */
+
+messageInput.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+      composer.requestSubmit();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToBottom() {
+
+  messagesEl.scrollTop =
+    messagesEl.scrollHeight;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   CHECK EXISTING LOGIN
+========================================================= */
+
+(async function init() {
+
+  try {
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await db.auth.getSession();
+
+
+    if (session) {
+
+      await startAdmin();
+
+    }
+
+  }
+  catch (error) {
+
+    console.error(
+      "Startup error:",
+      error
+    );
+
+  }
+
+})();
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+db.auth.onAuthStateChange(
+  async (
+    event,
+    session
+  ) => {
+
+    console.log(
+      "Auth state:",
+      event
+    );
+
+
+    if (
+      event === "SIGNED_OUT"
+    ) {
+
+      loginScreen.style.display =
+        "flex";
+
+
+      app.style.display =
+        "none";
+
+
+      selectedConversation =
+        null;
+
+    }
+
+  }
+);
 
 </script>
 
 </body>
+
 </html>
