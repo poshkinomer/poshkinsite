@@ -119,22 +119,18 @@
 
 .chat-title {
   font-family: "JetBrains Mono", monospace;
-
   font-size: .85rem;
-
   letter-spacing: .05em;
 }
 
 .chat-status {
   display: flex;
   align-items: center;
-
   gap: 7px;
 
   color: #8d8d8d;
 
   font-family: "JetBrains Mono", monospace;
-
   font-size: .68rem;
 }
 
@@ -147,6 +143,15 @@
   background: #6dff8b;
 
   box-shadow: 0 0 9px rgba(109,255,139,.6);
+}
+
+.chat-status.ended {
+  color: #888;
+}
+
+.chat-status.ended .chat-status-dot {
+  background: #777;
+  box-shadow: none;
 }
 
 
@@ -270,6 +275,120 @@
   border-color: rgba(255,255,255,.3);
 }
 
+#chatName::placeholder {
+  color: #666;
+}
+
+.chat-fine-print {
+  margin: 8px 0 0 !important;
+
+  color: #666 !important;
+
+  font-family: "JetBrains Mono", monospace !important;
+
+  font-size: .58rem !important;
+
+  line-height: 1.45 !important;
+}
+
+
+/* ==========================================
+   START CHAT BUTTON
+========================================== */
+
+#startChatButton {
+  width: 100%;
+
+  margin-top: 10px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  background: #eee;
+
+  color: #080808;
+
+  cursor: pointer;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .7rem;
+
+  font-weight: 700;
+
+  transition: .2s ease;
+}
+
+#startChatButton:hover {
+  background: #fff;
+}
+
+#startChatButton:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+
+/* ==========================================
+   NEW CHAT BUTTON
+========================================== */
+
+#newChatButton {
+  width: calc(100% - 24px);
+
+  margin: 12px;
+
+  padding: 11px;
+
+  border: 1px solid rgba(255,255,255,.16);
+
+  background: #eee;
+
+  color: #080808;
+
+  cursor: pointer;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .7rem;
+
+  font-weight: 700;
+
+  transition: .2s ease;
+}
+
+#newChatButton:hover {
+  background: #fff;
+}
+
+
+/* ==========================================
+   ENDED NOTICE
+========================================== */
+
+#chatEndedNotice {
+  display: none;
+
+  padding: 13px 16px;
+
+  border-top: 1px solid rgba(255,255,255,.08);
+
+  color: #888;
+
+  text-align: center;
+
+  font-family: "JetBrains Mono", monospace;
+
+  font-size: .62rem;
+
+  line-height: 1.5;
+}
+
+#chatEndedNotice.visible {
+  display: block;
+}
+
 
 /* ==========================================
    COMPOSER
@@ -315,6 +434,11 @@
   border-color: rgba(255,255,255,.3);
 }
 
+#chatInput:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 #chatSend {
   width: 48px;
 
@@ -339,7 +463,6 @@
 
 #chatSend:disabled {
   opacity: .4;
-
   cursor: not-allowed;
 }
 
@@ -489,6 +612,7 @@
 
         <b>➜</b>
         ~/poshkin $ mail -s "hello"
+
         <span class="out">
           poshkinomer@gmail.com
         </span>
@@ -636,16 +760,24 @@
       ~/poshkin/chat
     </div>
 
-    <div class="chat-status">
+    <div
+      class="chat-status"
+      id="chatStatus">
 
       <span class="chat-status-dot"></span>
 
-      live
+      <span id="chatStatusText">
+        live
+      </span>
 
     </div>
 
   </div>
 
+
+  <!-- ========================================
+       CHAT INTRO
+  ========================================= -->
 
   <div id="chatIntro">
 
@@ -660,23 +792,57 @@
       id="chatName"
       type="text"
       maxlength="80"
-      placeholder="your name (optional)"
-      autocomplete="off">
+      placeholder="your name"
+      autocomplete="name"
+      required>
+
+    <p class="chat-fine-print">
+      Please allow up to 2 hours for a response.
+    </p>
+
+    <button
+      id="startChatButton"
+      type="button">
+
+      Start Chat →
+
+    </button>
 
   </div>
 
 
+  <!-- ========================================
+       MESSAGES
+  ========================================= -->
+
   <div id="chatMessages">
 
-    <div class="chat-empty" id="chatEmpty">
+    <div
+      class="chat-empty"
+      id="chatEmpty">
 
-      No messages yet.<br>
-      Start the conversation ↓
+      Enter your name to start a conversation.
 
     </div>
 
   </div>
 
+
+  <!-- ========================================
+       ENDED NOTICE
+  ========================================= -->
+
+  <div
+    id="chatEndedNotice">
+
+    This chat has ended.
+
+  </div>
+
+
+  <!-- ========================================
+       COMPOSER
+  ========================================= -->
 
   <form id="chatComposer">
 
@@ -685,17 +851,33 @@
       maxlength="2000"
       placeholder="type a message..."
       rows="1"
-      autocomplete="off"></textarea>
+      autocomplete="off"
+      disabled></textarea>
 
     <button
       id="chatSend"
-      type="submit">
+      type="submit"
+      disabled>
 
       ↗
 
     </button>
 
   </form>
+
+
+  <!-- ========================================
+       NEW CHAT
+  ========================================= -->
+
+  <button
+    id="newChatButton"
+    type="button"
+    style="display:none;">
+
+    Start New Chat →
+
+  </button>
 
 </div>
 
@@ -759,6 +941,24 @@ const chatSend =
 const chatName =
   document.getElementById("chatName");
 
+const startChatButton =
+  document.getElementById("startChatButton");
+
+const newChatButton =
+  document.getElementById("newChatButton");
+
+const chatIntro =
+  document.getElementById("chatIntro");
+
+const chatEndedNotice =
+  document.getElementById("chatEndedNotice");
+
+const chatStatus =
+  document.getElementById("chatStatus");
+
+const chatStatusText =
+  document.getElementById("chatStatusText");
+
 
 /* ==========================================
    STATE
@@ -768,11 +968,17 @@ let conversationId = null;
 
 let realtimeChannel = null;
 
+let conversationChannel = null;
+
 let chatReady = false;
+
+let chatEnded = false;
+
+let visitorUserId = null;
 
 
 /* ==========================================
-   OPEN CHAT
+   OPEN / CLOSE CHAT
 ========================================== */
 
 chatButton.addEventListener(
@@ -798,12 +1004,27 @@ chatButton.addEventListener(
 
     chatButton.classList.add("active");
 
-    chatInput.focus();
-
 
     if (!chatReady) {
 
       await initializeChat();
+
+    }
+
+
+    if (!chatEnded) {
+
+      if (
+        chatInput.disabled
+      ) {
+
+        chatName.focus();
+
+      } else {
+
+        chatInput.focus();
+
+      }
 
     }
 
@@ -812,19 +1033,12 @@ chatButton.addEventListener(
 
 
 /* ==========================================
-   INITIALIZE
+   INITIALIZE VISITOR
 ========================================== */
 
 async function initializeChat() {
 
-  chatSend.disabled = true;
-
-
   try {
-
-    /*
-     * Check for an existing visitor session.
-     */
 
     let {
       data: {
@@ -835,8 +1049,7 @@ async function initializeChat() {
 
 
     /*
-     * Create an anonymous account if
-     * this visitor doesn't have one yet.
+     * Create anonymous account if needed.
      */
 
     if (!session) {
@@ -855,7 +1068,8 @@ async function initializeChat() {
 
       }
 
-      session = data.session;
+      session =
+        data.session;
 
     }
 
@@ -873,18 +1087,30 @@ async function initializeChat() {
       await supabaseClient.auth.getUser();
 
 
-    if (userError || !user) {
+    if (
+      userError ||
+      !user
+    ) {
 
       throw (
         userError ||
-        new Error("Could not identify visitor.")
+        new Error(
+          "Could not identify visitor."
+        )
       );
 
     }
 
 
+    visitorUserId =
+      user.id;
+
+
     /*
-     * Find existing conversation.
+     * Find the newest OPEN conversation.
+     *
+     * Ended conversations are deliberately
+     * ignored so they cannot reopen.
      */
 
     const {
@@ -893,10 +1119,19 @@ async function initializeChat() {
     } =
       await supabaseClient
         .from("conversations")
-        .select("id, visitor_name")
-        .eq("visitor_id", user.id)
+        .select(
+          "id, visitor_name, status, ended_at"
+        )
+        .eq(
+          "visitor_id",
+          user.id
+        )
+        .eq(
+          "status",
+          "open"
+        )
         .order(
-          "created_at",
+          "updated_at",
           {
             ascending: false
           }
@@ -913,7 +1148,7 @@ async function initializeChat() {
 
 
     /*
-     * Use existing conversation.
+     * Existing open conversation.
      */
 
     if (existingConversation) {
@@ -922,72 +1157,36 @@ async function initializeChat() {
         existingConversation.id;
 
 
-      if (
-        existingConversation.visitor_name
-      ) {
+      chatName.value =
+        existingConversation.visitor_name || "";
 
-        chatName.value =
-          existingConversation.visitor_name;
 
-      }
+      await activateExistingChat();
 
     }
 
 
     /*
-     * Otherwise create a conversation.
+     * No open conversation.
+     *
+     * Visitor must press Start Chat.
      */
 
     else {
 
-      const {
-        data: newConversation,
-        error: createError
-      } =
-        await supabaseClient
-          .from("conversations")
-          .insert({
-
-            visitor_id: user.id,
-
-            visitor_name:
-              chatName.value.trim() || null
-
-          })
-          .select("id")
-          .single();
-
-
-      if (createError) {
-
-        throw createError;
-
-      }
-
-
-      conversationId =
-        newConversation.id;
+      prepareForNewChat();
 
     }
 
 
     /*
-     * Load messages.
+     * Subscribe to conversation changes.
      */
 
-    await loadMessages();
-
-
-    /*
-     * Listen for new messages.
-     */
-
-    subscribeToMessages();
+    subscribeToConversation();
 
 
     chatReady = true;
-
-    chatSend.disabled = false;
 
   }
 
@@ -1004,6 +1203,285 @@ async function initializeChat() {
     );
 
   }
+
+}
+
+
+/* ==========================================
+   START NEW CHAT
+========================================== */
+
+startChatButton.addEventListener(
+  "click",
+  async () => {
+
+    await startNewConversation();
+
+  }
+);
+
+
+newChatButton.addEventListener(
+  "click",
+  async () => {
+
+    await startNewConversation();
+
+  }
+);
+
+
+async function startNewConversation() {
+
+  const name =
+    chatName.value.trim();
+
+
+  /*
+   * Name is required.
+   */
+
+  if (!name) {
+
+    chatName.focus();
+
+    chatName.style.borderColor =
+      "rgba(255,90,90,.8)";
+
+    setTimeout(
+      () => {
+
+        chatName.style.borderColor =
+          "rgba(255,255,255,.12)";
+
+      },
+      1200
+    );
+
+    return;
+
+  }
+
+
+  if (!visitorUserId) {
+
+    return;
+
+  }
+
+
+  startChatButton.disabled = true;
+
+  newChatButton.disabled = true;
+
+
+  try {
+
+    /*
+     * Create a completely new conversation.
+     */
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("conversations")
+        .insert({
+          visitor_id:
+            visitorUserId,
+
+          visitor_name:
+            name,
+
+          status:
+            "open"
+        })
+        .select(
+          "id, visitor_name, status, ended_at"
+        )
+        .single();
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    /*
+     * Clean up previous message
+     * realtime subscription.
+     */
+
+    if (realtimeChannel) {
+
+      await supabaseClient
+        .removeChannel(
+          realtimeChannel
+        );
+
+      realtimeChannel = null;
+
+    }
+
+
+    conversationId =
+      data.id;
+
+    chatEnded = false;
+
+
+    /*
+     * Reset interface.
+     */
+
+    chatMessages.innerHTML = "";
+
+    showEmptyState();
+
+    chatInput.value = "";
+
+    chatInput.disabled = false;
+
+    chatSend.disabled = false;
+
+    chatEndedNotice.classList.remove(
+      "visible"
+    );
+
+    newChatButton.style.display =
+      "none";
+
+    startChatButton.style.display =
+      "none";
+
+    chatName.disabled = true;
+
+    setChatStatus(
+      "live",
+      false
+    );
+
+
+    /*
+     * Subscribe to this new conversation.
+     */
+
+    subscribeToMessages();
+
+    scrollChatToBottom();
+
+    chatInput.focus();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Start chat error:",
+      error
+    );
+
+
+    showSystemMessage(
+      "Could not start the chat. Please try again."
+    );
+
+  }
+
+  finally {
+
+    startChatButton.disabled = false;
+
+    newChatButton.disabled = false;
+
+  }
+
+}
+
+
+/* ==========================================
+   ACTIVATE EXISTING CHAT
+========================================== */
+
+async function activateExistingChat() {
+
+  chatEnded = false;
+
+  chatIntro.style.display =
+    "block";
+
+  startChatButton.style.display =
+    "none";
+
+  chatName.disabled = true;
+
+  chatInput.disabled = false;
+
+  chatSend.disabled = false;
+
+  chatEndedNotice.classList.remove(
+    "visible"
+  );
+
+  newChatButton.style.display =
+    "none";
+
+  setChatStatus(
+    "live",
+    false
+  );
+
+
+  await loadMessages();
+
+  subscribeToMessages();
+
+}
+
+
+/* ==========================================
+   PREPARE FOR NEW CHAT
+========================================== */
+
+function prepareForNewChat() {
+
+  conversationId = null;
+
+  chatEnded = false;
+
+  chatIntro.style.display =
+    "block";
+
+  startChatButton.style.display =
+    "block";
+
+  startChatButton.disabled = false;
+
+  chatName.disabled = false;
+
+  chatInput.disabled = true;
+
+  chatSend.disabled = true;
+
+  chatEndedNotice.classList.remove(
+    "visible"
+  );
+
+  newChatButton.style.display =
+    "none";
+
+  setChatStatus(
+    "live",
+    false
+  );
+
+
+  showSystemMessage(
+    "Enter your name to start a conversation."
+  );
 
 }
 
@@ -1052,7 +1530,10 @@ async function loadMessages() {
   chatMessages.innerHTML = "";
 
 
-  if (!data || data.length === 0) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
     showEmptyState();
 
@@ -1062,7 +1543,8 @@ async function loadMessages() {
 
 
   data.forEach(
-    message => renderMessage(message)
+    message =>
+      renderMessage(message)
   );
 
 
@@ -1072,7 +1554,7 @@ async function loadMessages() {
 
 
 /* ==========================================
-   REALTIME
+   MESSAGE REALTIME
 ========================================== */
 
 function subscribeToMessages() {
@@ -1087,12 +1569,16 @@ function subscribeToMessages() {
   }
 
 
+  const subscribedConversationId =
+    conversationId;
+
+
   realtimeChannel =
     supabaseClient
 
       .channel(
-        "visitor-chat-" +
-        conversationId
+        "visitor-messages-" +
+        subscribedConversationId
       )
 
       .on(
@@ -1103,7 +1589,7 @@ function subscribeToMessages() {
           table: "messages",
           filter:
             "conversation_id=eq." +
-            conversationId
+            subscribedConversationId
         },
         payload => {
 
@@ -1112,8 +1598,7 @@ function subscribeToMessages() {
 
 
           /*
-           * Don't duplicate messages that
-           * were already rendered locally.
+           * Prevent duplicate local message.
            */
 
           if (
@@ -1142,12 +1627,259 @@ function subscribeToMessages() {
         status => {
 
           console.log(
-            "Chat realtime:",
+            "Chat message realtime:",
             status
           );
 
         }
       );
+
+}
+
+
+/* ==========================================
+   CONVERSATION REALTIME
+========================================== */
+
+function subscribeToConversation() {
+
+  if (conversationChannel) {
+
+    return;
+
+  }
+
+
+  if (!visitorUserId) {
+
+    return;
+
+  }
+
+
+  conversationChannel =
+    supabaseClient
+
+      .channel(
+        "visitor-conversations-" +
+        visitorUserId
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversations",
+          filter:
+            "visitor_id=eq." +
+            visitorUserId
+        },
+        payload => {
+
+          const conversation =
+            payload.new;
+
+
+          /*
+           * Only react to the currently
+           * open conversation.
+           */
+
+          if (
+            conversation.id !==
+            conversationId
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+           * Admin ended the chat.
+           */
+
+          if (
+            conversation.status ===
+            "ended"
+          ) {
+
+            handleChatEnded();
+
+          }
+
+        }
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "conversations"
+        },
+        payload => {
+
+          const deleted =
+            payload.old;
+
+
+          if (
+            deleted.id !==
+            conversationId
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+           * Conversation was deleted
+           * by the admin.
+           */
+
+          handleConversationDeleted();
+
+        }
+      )
+
+      .subscribe(
+        status => {
+
+          console.log(
+            "Conversation realtime:",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+/* ==========================================
+   CHAT ENDED
+========================================== */
+
+function handleChatEnded() {
+
+  if (chatEnded) {
+
+    return;
+
+  }
+
+
+  chatEnded = true;
+
+
+  /*
+   * Stop message sending.
+   */
+
+  chatInput.disabled = true;
+
+  chatSend.disabled = true;
+
+
+  /*
+   * Keep name visible but locked.
+   */
+
+  chatName.disabled = true;
+
+
+  /*
+   * Show ended state.
+   */
+
+  chatEndedNotice.classList.add(
+    "visible"
+  );
+
+
+  newChatButton.style.display =
+    "block";
+
+
+  startChatButton.style.display =
+    "none";
+
+
+  setChatStatus(
+    "ended",
+    true
+  );
+
+
+  /*
+   * Add visible notification
+   * inside the conversation.
+   */
+
+  showEndedSystemMessage();
+
+
+  scrollChatToBottom();
+
+}
+
+
+/* ==========================================
+   CHAT DELETED
+========================================== */
+
+function handleConversationDeleted() {
+
+  conversationId = null;
+
+  chatEnded = false;
+
+
+  if (realtimeChannel) {
+
+    supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
+
+    realtimeChannel = null;
+
+  }
+
+
+  chatInput.value = "";
+
+  chatInput.disabled = true;
+
+  chatSend.disabled = true;
+
+  chatName.disabled = false;
+
+  chatEndedNotice.classList.remove(
+    "visible"
+  );
+
+  newChatButton.style.display =
+    "none";
+
+  startChatButton.style.display =
+    "block";
+
+  startChatButton.disabled = false;
+
+  chatMessages.innerHTML = "";
+
+  showSystemMessage(
+    "This chat was deleted. Enter your name to start a new conversation."
+  );
+
+  setChatStatus(
+    "live",
+    false
+  );
 
 }
 
@@ -1161,6 +1893,13 @@ chatComposer.addEventListener(
   async event => {
 
     event.preventDefault();
+
+
+    if (chatEnded) {
+
+      return;
+
+    }
 
 
     const messageText =
@@ -1177,6 +1916,30 @@ chatComposer.addEventListener(
     }
 
 
+    const name =
+      chatName.value.trim();
+
+
+    /*
+     * Safety check:
+     * a chat cannot send without a name.
+     */
+
+    if (!name) {
+
+      chatInput.disabled = true;
+
+      chatSend.disabled = true;
+
+      chatName.disabled = false;
+
+      chatName.focus();
+
+      return;
+
+    }
+
+
     chatSend.disabled = true;
 
     chatInput.disabled = true;
@@ -1185,45 +1948,36 @@ chatComposer.addEventListener(
     try {
 
       /*
-       * Save visitor name.
+       * Keep the visitor name current.
        */
 
-      const name =
-        chatName.value.trim();
+      const {
+        error: nameError
+      } =
+        await supabaseClient
+          .from("conversations")
+          .update({
+            visitor_name:
+              name,
+
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq(
+            "id",
+            conversationId
+          );
 
 
-      if (name) {
+      if (nameError) {
 
-        const {
-          error: nameError
-        } =
-          await supabaseClient
-            .from("conversations")
-            .update({
-
-              visitor_name: name,
-
-              updated_at:
-                new Date().toISOString()
-
-            })
-            .eq(
-              "id",
-              conversationId
-            );
-
-
-        if (nameError) {
-
-          throw nameError;
-
-        }
+        throw nameError;
 
       }
 
 
       /*
-       * Insert message.
+       * Insert visitor message.
        */
 
       const {
@@ -1233,14 +1987,14 @@ chatComposer.addEventListener(
         await supabaseClient
           .from("messages")
           .insert({
-
             conversation_id:
               conversationId,
 
-            sender: "visitor",
+            sender:
+              "visitor",
 
-            message: messageText
-
+            message:
+              messageText
           })
           .select(
             "id, sender, message, created_at"
@@ -1256,7 +2010,7 @@ chatComposer.addEventListener(
 
 
       /*
-       * Show message immediately.
+       * Show immediately.
        */
 
       removeEmptyState();
@@ -1284,11 +2038,15 @@ chatComposer.addEventListener(
     }
 
 
-    chatInput.disabled = false;
+    if (!chatEnded) {
 
-    chatSend.disabled = false;
+      chatInput.disabled = false;
 
-    chatInput.focus();
+      chatSend.disabled = false;
+
+      chatInput.focus();
+
+    }
 
   }
 );
@@ -1348,6 +2106,47 @@ function renderMessage(message) {
 
 
   chatMessages.appendChild(wrapper);
+
+}
+
+
+/* ==========================================
+   ENDED SYSTEM MESSAGE
+========================================== */
+
+function showEndedSystemMessage() {
+
+  const existing =
+    document.getElementById(
+      "chatEndedMessage"
+    );
+
+
+  if (existing) {
+
+    return;
+
+  }
+
+
+  const message =
+    document.createElement("div");
+
+
+  message.id =
+    "chatEndedMessage";
+
+  message.className =
+    "chat-empty";
+
+
+  message.textContent =
+    "Chat has ended.";
+
+
+  chatMessages.appendChild(
+    message
+  );
 
 }
 
@@ -1433,7 +2232,39 @@ function showSystemMessage(text) {
     text;
 
 
-  chatMessages.appendChild(message);
+  chatMessages.appendChild(
+    message
+  );
+
+}
+
+
+/* ==========================================
+   CHAT STATUS
+========================================== */
+
+function setChatStatus(
+  text,
+  ended
+) {
+
+  chatStatusText.textContent =
+    text;
+
+
+  if (ended) {
+
+    chatStatus.classList.add(
+      "ended"
+    );
+
+  } else {
+
+    chatStatus.classList.remove(
+      "ended"
+    );
+
+  }
 
 }
 
@@ -1471,7 +2302,40 @@ chatInput.addEventListener(
 
       event.preventDefault();
 
-      chatComposer.requestSubmit();
+      if (!chatInput.disabled) {
+
+        chatComposer.requestSubmit();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   ENTER IN NAME FIELD
+========================================== */
+
+chatName.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Enter"
+    ) {
+
+      event.preventDefault();
+
+      if (
+        !startChatButton.disabled &&
+        startChatButton.style.display !== "none"
+      ) {
+
+        startChatButton.click();
+
+      }
 
     }
 
