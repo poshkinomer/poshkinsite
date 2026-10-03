@@ -1,1301 +1,1337 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Poshkin — Chat Admin</title>
+<title>Poshkin — Admin</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link
-  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
-  rel="stylesheet"
->
-
-<link
-  href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap"
-  rel="stylesheet"
->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-:root {
-
-  --bg: #080808;
-  --panel: #101010;
-  --panel-2: #151515;
-  --border: #292929;
-
-  --text: #f2f2f2;
-  --muted: #858585;
-
-  --green: #65d68b;
-  --danger: #ff6565;
-  --orange: #ffb35c;
-
+:root{
+  --bg:#0b0d10;
+  --panel:#111419;
+  --panel2:#171a20;
+  --border:#292e36;
+  --text:#f2f3f5;
+  --muted:#858c98;
+  --blue:#6ea8ff;
+  --green:#6ee7a0;
+  --red:#ff7373;
+  --yellow:#f4d06f;
+  --shadow:#050608;
+  --radius:10px;
 }
 
-
-/* =========================================================
-   RESET
-========================================================= */
-
-* {
-  box-sizing: border-box;
+*{
+  box-sizing:border-box;
 }
 
-html,
-body {
-
-  margin: 0;
-  padding: 0;
-
-  width: 100%;
-  height: 100%;
-
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
 }
 
-body {
-
-  background: var(--bg);
-  color: var(--text);
-
-  font-family: "General Sans", sans-serif;
-
+button,
+input,
+textarea,
+select{
+  font:inherit;
 }
 
+button{
+  cursor:pointer;
+}
 
-/* =========================================================
+/* =========================
    LOGIN
-========================================================= */
+========================= */
 
-.login-screen {
-
-  position: fixed;
-
-  inset: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: var(--bg);
-
-  z-index: 100;
-
+.login-screen{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
 }
 
-.login-box {
-
-  width: min(420px, calc(100% - 40px));
-
-  border: 1px solid var(--border);
-
-  background: var(--panel);
-
-  padding: 32px;
-
+.login-box{
+  width:min(420px,100%);
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:30px;
+  box-shadow:8px 8px 0 var(--shadow);
 }
 
-.login-terminal {
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 13px;
-
-  color: var(--muted);
-
-  margin-bottom: 24px;
-
+.login-box h1{
+  margin:0 0 8px;
+  font-size:25px;
 }
 
-.login-terminal b {
-
-  color: var(--text);
-
+.login-box p{
+  margin:0 0 25px;
+  color:var(--muted);
+  font-size:14px;
 }
 
-.login-box h1 {
-
-  margin: 0 0 8px;
-
-  font-family: "Clash Display", sans-serif;
-
-  font-size: 28px;
-
+.field{
+  margin-bottom:16px;
 }
 
-.login-box p {
-
-  color: var(--muted);
-
-  margin-bottom: 24px;
-
+.field label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:.08em;
 }
 
-.input {
-
-  width: 100%;
-
-  padding: 13px 14px;
-
-  margin-bottom: 12px;
-
-  border: 1px solid var(--border);
-
-  background: #0b0b0b;
-
-  color: var(--text);
-
-  font-family: "JetBrains Mono", monospace;
-
-  outline: none;
-
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  background:#0b0d10;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:11px 12px;
+  outline:none;
 }
 
-.input:focus {
-
-  border-color: #555;
-
+.field textarea{
+  min-height:120px;
+  resize:vertical;
 }
 
-.login-button {
-
-  width: 100%;
-
-  padding: 13px;
-
-  border: 1px solid var(--border);
-
-  background: var(--text);
-
-  color: #000;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--blue);
 }
 
-.login-button:hover {
-
-  opacity: .85;
-
+.login-button,
+.primary-button{
+  width:100%;
+  border:0;
+  border-radius:7px;
+  background:var(--blue);
+  color:#07101e;
+  padding:12px;
+  font-weight:bold;
 }
 
-.login-error {
-
-  display: none;
-
-  margin-top: 14px;
-
-  color: var(--danger);
-
-  font-size: 13px;
-
+.login-button:hover,
+.primary-button:hover{
+  filter:brightness(1.08);
 }
 
+.login-error{
+  color:var(--red);
+  margin-top:12px;
+  font-size:13px;
+  display:none;
+}
 
-/* =========================================================
+/* =========================
    APP
-========================================================= */
+========================= */
 
-.app {
-
-  display: none;
-
-  height: 100vh;
-  width: 100%;
-
+.app{
+  height:100vh;
+  display:flex;
+  overflow:hidden;
 }
 
-
-/* =========================================================
+/* =========================
    SIDEBAR
-========================================================= */
+========================= */
 
-.sidebar {
-
-  width: 330px;
-
-  min-width: 330px;
-
-  border-right: 1px solid var(--border);
-
-  background: var(--panel);
-
-  display: flex;
-
-  flex-direction: column;
-
+.sidebar{
+  width:330px;
+  min-width:330px;
+  border-right:1px solid var(--border);
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
 }
 
-.sidebar-head {
-
-  height: 72px;
-
-  padding: 0 20px;
-
-  border-bottom: 1px solid var(--border);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
+.sidebar-head{
+  padding:18px;
+  border-bottom:1px solid var(--border);
 }
 
-.logo {
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 14px;
-
+.sidebar-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
 
-.logo b {
-
-  color: var(--text);
-
+.sidebar-title h1{
+  font-size:16px;
+  margin:0;
 }
 
-.status {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  color: var(--muted);
-
-  font-size: 12px;
-
+.logout{
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted);
+  border-radius:6px;
+  padding:6px 9px;
+  font-size:11px;
 }
 
-.status-dot {
-
-  width: 7px;
-
-  height: 7px;
-
-  background: var(--green);
-
-  border-radius: 50%;
-
+.logout:hover{
+  color:var(--text);
+  border-color:#555;
 }
 
+/* admin navigation */
 
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.search {
-
-  padding: 14px;
-
-  border-bottom: 1px solid var(--border);
-
+.admin-nav{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  padding:12px 18px;
+  border-bottom:1px solid var(--border);
 }
 
-.search input {
-
-  width: 100%;
-
-  padding: 10px;
-
-  border: 1px solid var(--border);
-
-  background: #0b0b0b;
-
-  color: var(--text);
-
-  outline: none;
-
-  font-family: "General Sans", sans-serif;
-
+.admin-nav button{
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted);
+  border-radius:6px;
+  padding:9px;
+  font-size:12px;
+  font-weight:bold;
 }
 
-
-/* =========================================================
-   CONVERSATION LIST
-========================================================= */
-
-.conversations {
-
-  flex: 1;
-
-  overflow-y: auto;
-
+.admin-nav button.active{
+  background:#1d2633;
+  border-color:#405a7d;
+  color:var(--blue);
 }
 
-.section-title {
+/* search */
 
-  padding: 14px 20px 8px;
-
-  color: #666;
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 10px;
-
-  letter-spacing: 1.5px;
-
+.search-wrap{
+  padding:12px 18px;
+  border-bottom:1px solid var(--border);
 }
 
-.conversation {
-
-  padding: 15px 20px;
-
-  border-bottom: 1px solid var(--border);
-
-  cursor: pointer;
-
-  transition: background .15s ease;
-
+.search-wrap input{
+  width:100%;
+  background:#0b0d10;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:9px 10px;
+  border-radius:6px;
+  outline:none;
 }
 
-.conversation:hover,
-.conversation.active {
-
-  background: var(--panel-2);
-
+.search-wrap input:focus{
+  border-color:var(--blue);
 }
 
-.conversation-top {
-
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 10px;
-
+.conversation-list{
+  overflow:auto;
+  flex:1;
 }
 
-.visitor {
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 13px;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-
+.conversation{
+  position:relative;
+  padding:15px 44px 15px 18px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
 }
 
-.time {
-
-  color: var(--muted);
-
-  font-size: 10px;
-
-  white-space: nowrap;
-
+.conversation:hover{
+  background:#151920;
 }
 
-.preview {
-
-  margin-top: 7px;
-
-  color: var(--muted);
-
-  font-size: 12px;
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
+.conversation.active{
+  background:#1a2029;
+  border-left:3px solid var(--blue);
+  padding-left:15px;
 }
 
-.conversation-status {
-
-  display: inline-block;
-
-  margin-top: 8px;
-
-  font-size: 9px;
-
-  font-family: "JetBrains Mono", monospace;
-
-  padding: 3px 6px;
-
-  border: 1px solid rgba(101,214,139,.25);
-
-  color: var(--green);
-
+.conversation-name{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:5px;
 }
 
-.conversation-status.ended {
-
-  border-color: rgba(255,255,255,.12);
-
-  color: #666;
-
+.conversation-preview{
+  font-size:12px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.delete-small {
-
-  float: right;
-
-  margin-top: 7px;
-
-  border: 0;
-
-  background: transparent;
-
-  color: #555;
-
-  cursor: pointer;
-
-  font-size: 13px;
-
-  padding: 2px 4px;
-
+.conversation-time{
+  font-size:10px;
+  color:#666d78;
+  margin-top:7px;
 }
 
-.delete-small:hover {
-
-  color: var(--danger);
-
+.delete-small{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  border:1px solid #352124;
+  background:#1b1113;
+  color:var(--red);
+  width:27px;
+  height:27px;
+  border-radius:5px;
+  opacity:.75;
 }
 
-.list-empty {
-
-  padding: 35px 20px;
-
-  text-align: center;
-
-  color: #555;
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 11px;
-
+.delete-small:hover{
+  opacity:1;
+  background:#291619;
 }
 
-
-/* =========================================================
-   CHAT AREA
-========================================================= */
-
-.chat {
-
-  flex: 1;
-
-  display: flex;
-
-  flex-direction: column;
-
-  min-width: 0;
-
+.empty-list{
+  padding:30px 18px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:center;
 }
 
-.chat-head {
+/* =========================
+   CHAT
+========================= */
 
-  min-height: 72px;
-
-  border-bottom: 1px solid var(--border);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  padding: 12px 25px;
-
-  gap: 20px;
-
+.chat{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
 }
 
-.chat-title {
-
-  font-family: "JetBrains Mono", monospace;
-
-  min-width: 0;
-
+.chat-header{
+  min-height:70px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:15px 22px;
 }
 
-.chat-title-name {
-
-  font-size: 14px;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-
+.chat-title{
+  min-width:0;
 }
 
-.chat-title small {
-
-  display: block;
-
-  color: var(--muted);
-
-  margin-top: 5px;
-
-  font-family: "General Sans", sans-serif;
-
-  font-size: 11px;
-
+.chat-title h2{
+  margin:0;
+  font-size:15px;
 }
 
-.chat-actions {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  flex-shrink: 0;
-
+.chat-title small{
+  color:var(--muted);
+  font-size:11px;
 }
 
-.action-button {
-
-  border: 1px solid var(--border);
-
-  background: #111;
-
-  color: var(--text);
-
-  padding: 9px 12px;
-
-  cursor: pointer;
-
-  font-size: 11px;
-
-  font-family: "General Sans", sans-serif;
-
+.chat-actions{
+  display:flex;
+  gap:7px;
+  flex-shrink:0;
 }
 
-.action-button:hover {
-
-  background: #1b1b1b;
-
+.chat-actions button{
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  border-radius:6px;
+  padding:8px 10px;
+  font-size:11px;
 }
 
-.action-button.end {
-
-  color: var(--orange);
-
-  border-color: rgba(255,179,92,.25);
-
+.chat-actions button:hover{
+  color:var(--text);
+  border-color:#555;
 }
 
-.action-button.delete {
-
-  color: var(--danger);
-
-  border-color: rgba(255,101,101,.2);
-
+.chat-actions .danger{
+  color:var(--red);
+  border-color:#432327;
 }
 
-.action-button:disabled {
-
-  opacity: .35;
-
-  cursor: not-allowed;
-
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:25px;
 }
 
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-.messages {
-
-  flex: 1;
-
-  overflow-y: auto;
-
-  padding: 30px;
-
+.no-chat{
+  height:100%;
+  display:grid;
+  place-items:center;
+  color:var(--muted);
+  font-size:13px;
 }
 
-.empty {
-
-  height: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  color: var(--muted);
-
-  font-family: "JetBrains Mono", monospace;
-
-  text-align: center;
-
-  line-height: 1.7;
-
+.message{
+  display:flex;
+  margin-bottom:14px;
 }
 
-.message {
-
-  max-width: 70%;
-
-  margin-bottom: 18px;
-
+.message.admin{
+  justify-content:flex-end;
 }
 
-.message.visitor {
-
-  margin-right: auto;
-
+.message-bubble{
+  max-width:min(650px,80%);
+  border-radius:9px;
+  padding:10px 13px;
+  font-size:13px;
+  line-height:1.45;
+  white-space:pre-wrap;
+  word-break:break-word;
 }
 
-.message.admin {
-
-  margin-left: auto;
-
-  text-align: right;
-
+.message.visitor .message-bubble{
+  background:#1b2028;
+  border:1px solid var(--border);
 }
 
-.message-bubble {
-
-  display: inline-block;
-
-  padding: 12px 15px;
-
-  border: 1px solid var(--border);
-
-  background: var(--panel);
-
-  text-align: left;
-
-  line-height: 1.5;
-
-  word-break: break-word;
-
+.message.admin .message-bubble{
+  background:#20324d;
+  border:1px solid #304c70;
 }
 
-.message.admin .message-bubble {
-
-  background: var(--text);
-
-  color: #000;
-
-  border-color: var(--text);
-
+.message-meta{
+  font-size:9px;
+  color:#737b87;
+  margin-top:5px;
 }
 
-.message-meta {
-
-  color: var(--muted);
-
-  font-size: 10px;
-
-  margin-top: 5px;
-
+.composer{
+  border-top:1px solid var(--border);
+  padding:14px;
 }
 
-.system-message {
-
-  text-align: center;
-
-  color: #666;
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 10px;
-
-  margin: 20px 0;
-
+.quick-replies{
+  display:flex;
+  gap:6px;
+  overflow:auto;
+  margin-bottom:9px;
 }
 
-
-/* =========================================================
-   QUICK REPLIES
-========================================================= */
-
-.quick-replies {
-
-  border-top: 1px solid var(--border);
-
-  padding: 10px 15px;
-
-  background: #0d0d0d;
-
+.quick-replies button{
+  flex-shrink:0;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--muted);
+  border-radius:5px;
+  padding:6px 8px;
+  font-size:10px;
 }
 
-.quick-replies-header {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-bottom: 8px;
-
+.quick-replies button:hover{
+  color:var(--text);
 }
 
-.quick-replies-title {
-
-  color: #666;
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 9px;
-
-  letter-spacing: 1.5px;
-
+.composer-row{
+  display:flex;
+  gap:8px;
 }
 
-.quick-replies-list {
-
-  display: flex;
-
-  gap: 7px;
-
-  flex-wrap: wrap;
-
+.composer textarea{
+  flex:1;
+  min-height:45px;
+  max-height:140px;
+  resize:none;
+  background:#0b0d10;
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:11px;
+  color:var(--text);
+  outline:none;
 }
 
-.quick-reply {
-
-  border: 1px solid #292929;
-
-  background: #151515;
-
-  color: #aaa;
-
-  padding: 8px 10px;
-
-  border-radius: 4px;
-
-  font-family: "General Sans", sans-serif;
-
-  font-size: 11px;
-
-  cursor: pointer;
-
-  transition: .15s ease;
-
-  text-align: left;
-
+.composer textarea:focus{
+  border-color:var(--blue);
 }
 
-.quick-reply:hover {
-
-  background: #202020;
-
-  border-color: #444;
-
-  color: #fff;
-
+.send-button{
+  width:75px;
+  border:0;
+  border-radius:7px;
+  background:var(--blue);
+  color:#07101e;
+  font-weight:bold;
 }
 
-.quick-reply:active {
+/* =========================
+   EVENTS ADMIN
+========================= */
 
-  transform: scale(.98);
-
+.events-admin{
+  display:none;
+  flex:1;
+  min-width:0;
+  overflow:auto;
+  flex-direction:column;
 }
 
-.quick-reply:disabled {
-
-  opacity: .35;
-
-  cursor: not-allowed;
-
+.app.events-mode .chat{
+  display:none;
 }
 
-
-/* =========================================================
-   COMPOSER
-========================================================= */
-
-.composer {
-
-  border-top: 1px solid var(--border);
-
-  padding: 15px;
-
-  display: flex;
-
-  gap: 10px;
-
+.app.events-mode .events-admin{
+  display:flex;
 }
 
-.composer textarea {
-
-  flex: 1;
-
-  resize: none;
-
-  height: 48px;
-
-  padding: 14px;
-
-  border: 1px solid var(--border);
-
-  background: #0b0b0b;
-
-  color: var(--text);
-
-  font-family: "General Sans", sans-serif;
-
-  outline: none;
-
+.events-header{
+  min-height:70px;
+  border-bottom:1px solid var(--border);
+  padding:15px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
 }
 
-.send {
-
-  width: 90px;
-
-  border: 1px solid var(--border);
-
-  background: var(--text);
-
-  color: #000;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
+.events-header h2{
+  margin:0;
+  font-size:17px;
 }
 
-.send:hover {
-
-  opacity: .85;
-
+.events-header p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:11px;
 }
 
-.send:disabled {
-
-  opacity: .35;
-
-  cursor: not-allowed;
-
+.new-event-button{
+  border:0;
+  background:var(--blue);
+  color:#07101e;
+  border-radius:6px;
+  padding:9px 13px;
+  font-size:11px;
+  font-weight:bold;
 }
 
-
-/* =========================================================
-   ENDED STATE
-========================================================= */
-
-.chat-ended-bar {
-
-  display: none;
-
-  padding: 12px 15px;
-
-  border-top: 1px solid var(--border);
-
-  background: #111;
-
-  color: #777;
-
-  font-family: "JetBrains Mono", monospace;
-
-  font-size: 10px;
-
-  text-align: center;
-
+.events-content{
+  padding:22px;
+  display:grid;
+  grid-template-columns:minmax(300px,1fr) minmax(350px,520px);
+  gap:20px;
+  align-items:start;
 }
 
+.event-admin-list{
+  display:grid;
+  gap:10px;
+}
 
-/* =========================================================
+.event-admin-card{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:15px;
+}
+
+.event-admin-card:hover{
+  border-color:#444b55;
+}
+
+.event-admin-card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.event-admin-card h3{
+  margin:0 0 6px;
+  font-size:14px;
+}
+
+.event-admin-meta{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+
+.event-status{
+  flex-shrink:0;
+  height:max-content;
+  padding:4px 7px;
+  border-radius:4px;
+  font-size:9px;
+  font-weight:bold;
+  letter-spacing:.06em;
+}
+
+.event-status.completed{
+  color:var(--green);
+  background:#102219;
+  border:1px solid #234a32;
+}
+
+.event-status.upcoming{
+  color:var(--blue);
+  background:#111e30;
+  border:1px solid #29466a;
+}
+
+.event-admin-actions{
+  display:flex;
+  gap:6px;
+  margin-top:12px;
+}
+
+.event-admin-actions button{
+  border:1px solid var(--border);
+  background:#0b0d10;
+  color:var(--muted);
+  border-radius:5px;
+  padding:6px 9px;
+  font-size:10px;
+}
+
+.event-admin-actions button:hover{
+  color:var(--text);
+}
+
+.event-admin-actions .delete-event{
+  color:var(--red);
+}
+
+.event-editor{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:20px;
+  position:sticky;
+  top:20px;
+}
+
+.event-editor h3{
+  margin:0 0 18px;
+  font-size:15px;
+}
+
+.editor-empty{
+  color:var(--muted);
+  text-align:center;
+  padding:50px 20px;
+  font-size:13px;
+}
+
+.editor-actions{
+  display:flex;
+  gap:8px;
+  margin-top:18px;
+}
+
+.editor-actions button{
+  flex:1;
+  border-radius:6px;
+  padding:10px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.save-event{
+  background:var(--blue);
+  border:0;
+  color:#07101e;
+}
+
+.cancel-event{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+}
+
+.image-section,
+.secret-section{
+  border:1px solid var(--border);
+  background:#0d0f13;
+  border-radius:7px;
+  padding:12px;
+  margin-top:10px;
+}
+
+.image-section label,
+.secret-section label{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:8px;
+}
+
+.image-section input[type=file]{
+  width:100%;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.image-preview{
+  width:100%;
+  max-height:190px;
+  object-fit:cover;
+  border-radius:6px;
+  margin-top:10px;
+  display:none;
+}
+
+.remove-image{
+  display:none;
+  margin-top:8px;
+  font-size:11px;
+  color:var(--red);
+}
+
+.remove-image input{
+  margin-right:5px;
+}
+
+.form-help{
+  color:#68707b;
+  font-size:10px;
+  line-height:1.5;
+  margin-top:6px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  background:#1b2028;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 14px;
+  border-radius:7px;
+  font-size:12px;
+  box-shadow:5px 5px 0 #050608;
+  transform:translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:100;
+}
+
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.toast.error{
+  border-color:#592a30;
+  color:var(--red);
+}
+
+/* =========================
    MOBILE
-========================================================= */
+========================= */
 
-@media (max-width: 700px) {
+@media(max-width:800px){
 
-  .sidebar {
-
-    width: 100%;
-
-    min-width: 100%;
-
+  .sidebar{
+    width:270px;
+    min-width:270px;
   }
 
-  .chat {
-
-    display: none;
-
+  .events-content{
+    grid-template-columns:1fr;
   }
 
-  .app.chat-open .sidebar {
-
-    display: none;
-
+  .event-editor{
+    position:static;
   }
-
-  .app.chat-open .chat {
-
-    display: flex;
-
-  }
-
-  .messages {
-
-    padding: 20px;
-
-  }
-
-  .message {
-
-    max-width: 85%;
-
-  }
-
-  .chat-head {
-
-    padding: 12px 15px;
-
-  }
-
-  .chat-actions {
-
-    gap: 5px;
-
-  }
-
-  .action-button {
-
-    padding: 8px;
-
-    font-size: 10px;
-
-  }
-
-  .quick-reply {
-
-    font-size: 10px;
-
-  }
-
 }
 
+@media(max-width:650px){
+
+  .app{
+    display:block;
+    overflow:auto;
+  }
+
+  .sidebar{
+    width:100%;
+    min-width:0;
+    height:auto;
+    max-height:50vh;
+  }
+
+  .conversation-list{
+    max-height:220px;
+  }
+
+  .chat{
+    height:calc(100vh - 50vh);
+    min-height:450px;
+  }
+
+  .app.events-mode .sidebar{
+    display:none;
+  }
+
+  .app.events-mode .events-admin{
+    min-height:100vh;
+  }
+
+  .events-content{
+    padding:14px;
+  }
+
+  .events-header{
+    padding:14px;
+  }
+
+  .chat-header{
+    padding:12px 14px;
+  }
+
+  .messages{
+    padding:15px;
+  }
+}
 </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =======================================================
+<!-- =========================
      LOGIN
-======================================================= -->
+========================= -->
 
 <div class="login-screen" id="loginScreen">
 
   <div class="login-box">
 
-    <div class="login-terminal">
-      <b>➜</b> ~/poshkin/admin $ authenticate
-    </div>
-
-    <h1>Chat Admin</h1>
+    <h1>Poshkin Admin</h1>
 
     <p>
-      Sign in to access visitor conversations.
+      Sign in to manage your live chat and website events.
     </p>
 
-    <input
-      class="input"
-      id="email"
-      type="email"
-      placeholder="admin email"
-      autocomplete="username"
-    >
+    <form id="loginForm">
 
-    <input
-      class="input"
-      id="password"
-      type="password"
-      placeholder="password"
-      autocomplete="current-password"
-    >
+      <div class="field">
+        <label>Email</label>
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="username"
+          required
+        >
+      </div>
 
-    <button
-      class="login-button"
-      id="loginBtn"
-      type="button"
-    >
-      sign in →
-    </button>
+      <div class="field">
+        <label>Password</label>
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
 
-    <div
-      class="login-error"
-      id="loginError"
-    ></div>
+      <button class="login-button" type="submit">
+        Sign in
+      </button>
+
+      <div class="login-error" id="loginError"></div>
+
+    </form>
 
   </div>
 
 </div>
 
 
-<!-- =======================================================
-     ADMIN APP
-======================================================= -->
+<!-- =========================
+     APP
+========================= -->
 
-<div
-  class="app"
-  id="app"
->
+<div class="app" id="app" style="display:none">
 
-
-  <!-- =====================================================
+  <!-- =========================
        SIDEBAR
-  ====================================================== -->
+  ========================= -->
 
   <aside class="sidebar">
 
-
     <div class="sidebar-head">
 
-      <div class="logo">
-        <b>➜</b> ~/poshkin/chat
-      </div>
+      <div class="sidebar-title">
 
-      <div class="status">
+        <h1>Poshkin Admin</h1>
 
-        <span class="status-dot"></span>
-
-        online
+        <button class="logout" id="logoutBtn">
+          logout
+        </button>
 
       </div>
 
     </div>
 
 
-    <div class="search">
+    <div class="admin-nav">
 
-      <input
-        type="search"
-        id="search"
-        placeholder="search conversations..."
+      <button
+        id="chatNav"
+        class="active"
+        type="button"
       >
+        CHAT
+      </button>
+
+      <button
+        id="eventsNav"
+        type="button"
+      >
+        EVENTS
+      </button>
 
     </div>
 
 
-    <div
-      class="conversations"
-      id="conversations"
-    >
+    <!-- CHAT SIDEBAR -->
 
-      <div class="list-empty">
-        Loading...
+    <div id="chatSidebar">
+
+      <div class="search-wrap">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search conversations..."
+        >
+
       </div>
 
-    </div>
+      <div
+        class="conversation-list"
+        id="conversationList"
+      ></div>
 
+    </div>
 
   </aside>
 
 
-  <!-- =====================================================
+  <!-- =========================
        CHAT
-  ====================================================== -->
+  ========================= -->
 
-  <main class="chat">
+  <main class="chat" id="chatView">
 
+    <header class="chat-header">
 
-    <header class="chat-head">
+      <div class="chat-title">
 
-
-      <div
-        class="chat-title"
-        id="chatTitle"
-      >
-
-        <div
-          class="chat-title-name"
-          id="chatTitleName"
-        >
+        <h2 id="chatName">
           Select a conversation
-        </div>
+        </h2>
 
-        <small id="chatStatus">
-          Choose a visitor from the left.
-        </small>
+        <small id="chatInfo"></small>
 
       </div>
-
 
       <div class="chat-actions">
 
         <button
-          class="action-button end"
           id="endChatBtn"
           type="button"
-          disabled
         >
-          End Chat
+          End chat
         </button>
 
         <button
-          class="action-button delete"
           id="deleteChatBtn"
+          class="danger"
           type="button"
-          disabled
         >
-          🗑 Delete
+          Delete
         </button>
 
       </div>
-
 
     </header>
 
 
-    <section
+    <div
       class="messages"
       id="messages"
     >
 
-      <div class="empty">
-
-        ➜ ~/poshkin/chat $<br>
-        select conversation_
-
-      </div>
-
-    </section>
-
-
-    <!-- QUICK REPLIES -->
-
-    <div
-      class="quick-replies"
-      id="quickReplies"
-    >
-
-      <div class="quick-replies-header">
-
-        <span class="quick-replies-title">
-          QUICK REPLIES
-        </span>
-
-      </div>
-
-
-      <div class="quick-replies-list">
-
-
-        <button
-          type="button"
-          class="quick-reply"
-          data-message="Hey there, How can I help you?"
-        >
-          Hey there, How can I help you?
-        </button>
-
-
-        <button
-          type="button"
-          class="quick-reply"
-          data-message="Thank you for contacting us, if you have any more questions feel free to open a new chat. Have a great day!"
-        >
-          Thank you for contacting us...
-        </button>
-
-
-        <button
-          type="button"
-          class="quick-reply"
-          data-message="Thanks for reaching out! I'll get back to you as soon as possible."
-        >
-          I'll get back to you soon.
-        </button>
-
-
-        <button
-          type="button"
-          class="quick-reply"
-          data-message="You're very welcome! If you need anything else, just let me know."
-        >
-          You're very welcome!
-        </button>
-
-
+      <div class="no-chat">
+        Select a conversation to view messages.
       </div>
 
     </div>
 
 
-    <!-- ENDED BAR -->
+    <div class="composer">
 
-    <div
-      class="chat-ended-bar"
-      id="chatEndedBar"
-    >
-      This chat has ended. The visitor must start a new chat to continue.
+      <div class="quick-replies">
+
+        <button
+          type="button"
+          data-reply="Hey! Thanks for reaching out. How can I help?"
+        >
+          Hello
+        </button>
+
+        <button
+          type="button"
+          data-reply="Thanks for your message! I'll take a look."
+        >
+          I'll take a look
+        </button>
+
+        <button
+          type="button"
+          data-reply="Thanks for reaching out!"
+        >
+          Thanks
+        </button>
+
+        <button
+          type="button"
+          data-reply="I'll get back to you shortly."
+        >
+          Get back shortly
+        </button>
+
+      </div>
+
+      <div class="composer-row">
+
+        <textarea
+          id="messageInput"
+          placeholder="Type a message..."
+        ></textarea>
+
+        <button
+          class="send-button"
+          id="sendButton"
+          type="button"
+        >
+          Send
+        </button>
+
+      </div>
+
     </div>
-
-
-    <!-- COMPOSER -->
-
-    <form
-      class="composer"
-      id="composer"
-    >
-
-      <textarea
-        id="messageInput"
-        maxlength="2000"
-        placeholder="type a reply..."
-        disabled
-      ></textarea>
-
-
-      <button
-        class="send"
-        type="submit"
-        id="sendBtn"
-        disabled
-      >
-        send →
-      </button>
-
-    </form>
-
 
   </main>
 
 
+  <!-- =========================
+       EVENTS
+  ========================= -->
+
+  <main class="events-admin" id="eventsView">
+
+    <header class="events-header">
+
+      <div>
+        <h2>Events</h2>
+        <p>
+          Create and manage the events displayed on your website.
+        </p>
+      </div>
+
+      <button
+        class="new-event-button"
+        id="newEventBtn"
+        type="button"
+      >
+        + New Event
+      </button>
+
+    </header>
+
+
+    <div class="events-content">
+
+      <!-- EVENT LIST -->
+
+      <section>
+
+        <div
+          class="event-admin-list"
+          id="eventAdminList"
+        >
+          <div class="empty-list">
+            Loading events...
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- EVENT EDITOR -->
+
+      <section class="event-editor">
+
+        <div
+          id="editorEmpty"
+          class="editor-empty"
+        >
+          Select an event to edit it,
+          or click <b>+ New Event</b>.
+        </div>
+
+
+        <form
+          id="eventForm"
+          style="display:none"
+        >
+
+          <h3 id="editorTitle">
+            New Event
+          </h3>
+
+
+          <div class="field">
+
+            <label>Event title</label>
+
+            <input
+              id="eventTitle"
+              type="text"
+              required
+              placeholder="Campfire Vancouver"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Date / date range</label>
+
+            <input
+              id="eventDate"
+              type="text"
+              required
+              placeholder="feb 28 – mar 1, 2026"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Location</label>
+
+            <input
+              id="eventLocation"
+              type="text"
+              required
+              placeholder="vancouver"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Description</label>
+
+            <textarea
+              id="eventDescription"
+              required
+              placeholder="Describe the event..."
+            ></textarea>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Icon / number</label>
+
+            <input
+              id="eventIcon"
+              type="text"
+              maxlength="8"
+              placeholder="01"
+            >
+
+            <div class="form-help">
+              Examples: 01, 02, 03, ??, or any short label.
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Status</label>
+
+            <select id="eventStatus">
+
+              <option value="upcoming">
+                Upcoming
+              </option>
+
+              <option value="completed">
+                Completed
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- UPCOMING OPTIONS -->
+
+          <div
+            class="secret-section"
+            id="upcomingOptions"
+          >
+
+            <label>
+              Upcoming display
+            </label>
+
+            <select id="eventRevealMode">
+
+              <option value="normal">
+                Normal upcoming event
+              </option>
+
+              <option value="secret">
+                Secret / blurred hover reveal
+              </option>
+
+            </select>
+
+            <div class="form-help">
+              Secret mode keeps the card blurred until the visitor
+              hovers or taps it.
+            </div>
+
+          </div>
+
+
+          <!-- COMPLETED IMAGE -->
+
+          <div
+            class="image-section"
+            id="completedOptions"
+          >
+
+            <label>
+              Completed event hover image
+            </label>
+
+            <input
+              id="eventImage"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+            >
+
+            <div class="form-help">
+              Optional. The image appears when visitors hover over
+              the completed event card.
+            </div>
+
+            <img
+              id="imagePreview"
+              class="image-preview"
+              alt="Event image preview"
+            >
+
+            <label
+              class="remove-image"
+              id="removeImageLabel"
+            >
+              <input
+                id="removeImage"
+                type="checkbox"
+              >
+              Remove current image
+            </label>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Signup URL</label>
+
+            <input
+              id="eventSignup"
+              type="url"
+              placeholder="https://..."
+            >
+
+            <div class="form-help">
+              Leave empty if the event does not have a signup link.
+            </div>
+
+          </div>
+
+
+          <div class="editor-actions">
+
+            <button
+              class="cancel-event"
+              id="cancelEventBtn"
+              type="button"
+            >
+              Cancel
+            </button>
+
+            <button
+              class="save-event"
+              id="saveEventBtn"
+              type="submit"
+            >
+              Save Event
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+
+  </main>
+
 </div>
 
 
-<!-- =======================================================
-     SUPABASE
-======================================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div
+  class="toast"
+  id="toast"
+></div>
 
 
 <script>
-
-
-/* =========================================================
-   SUPABASE CONFIG
-========================================================= */
+/* ============================================================
+   SUPABASE
+============================================================ */
 
 const SUPABASE_URL =
   "https://zrxculnvhdnqvdhrfays.supabase.co";
@@ -1303,17 +1339,34 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_-iZ0ectVl2b38oSSuIUAXA_7sNYaQzA";
 
+const {
+  createClient
+} = supabase;
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const db = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+
+let currentUser = null;
+
+let conversations = [];
+let selectedConversation = null;
+
+let events = [];
+let editingEvent = null;
+
+let realtimeChannel = null;
+
+
+/* ============================================================
+   DOM
+============================================================ */
 
 const loginScreen =
   document.getElementById("loginScreen");
@@ -1321,41 +1374,41 @@ const loginScreen =
 const app =
   document.getElementById("app");
 
-const loginBtn =
-  document.getElementById("loginBtn");
+const loginForm =
+  document.getElementById("loginForm");
 
 const loginError =
   document.getElementById("loginError");
 
-const emailInput =
-  document.getElementById("email");
+const logoutBtn =
+  document.getElementById("logoutBtn");
 
-const passwordInput =
-  document.getElementById("password");
+const chatNav =
+  document.getElementById("chatNav");
 
-const conversationsEl =
-  document.getElementById("conversations");
+const eventsNav =
+  document.getElementById("eventsNav");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const conversationList =
+  document.getElementById("conversationList");
 
 const messagesEl =
   document.getElementById("messages");
 
-const searchInput =
-  document.getElementById("search");
+const chatName =
+  document.getElementById("chatName");
 
-const chatTitleName =
-  document.getElementById("chatTitleName");
-
-const chatStatus =
-  document.getElementById("chatStatus");
-
-const composer =
-  document.getElementById("composer");
+const chatInfo =
+  document.getElementById("chatInfo");
 
 const messageInput =
   document.getElementById("messageInput");
 
-const sendBtn =
-  document.getElementById("sendBtn");
+const sendButton =
+  document.getElementById("sendButton");
 
 const endChatBtn =
   document.getElementById("endChatBtn");
@@ -1363,130 +1416,224 @@ const endChatBtn =
 const deleteChatBtn =
   document.getElementById("deleteChatBtn");
 
-const chatEndedBar =
-  document.getElementById("chatEndedBar");
+const newEventBtn =
+  document.getElementById("newEventBtn");
 
-const quickReplyButtons =
-  document.querySelectorAll(".quick-reply");
+const eventAdminList =
+  document.getElementById("eventAdminList");
+
+const eventForm =
+  document.getElementById("eventForm");
+
+const editorEmpty =
+  document.getElementById("editorEmpty");
+
+const editorTitle =
+  document.getElementById("editorTitle");
+
+const eventTitle =
+  document.getElementById("eventTitle");
+
+const eventDate =
+  document.getElementById("eventDate");
+
+const eventLocation =
+  document.getElementById("eventLocation");
+
+const eventDescription =
+  document.getElementById("eventDescription");
+
+const eventIcon =
+  document.getElementById("eventIcon");
+
+const eventStatus =
+  document.getElementById("eventStatus");
+
+const eventRevealMode =
+  document.getElementById("eventRevealMode");
+
+const eventSignup =
+  document.getElementById("eventSignup");
+
+const eventImage =
+  document.getElementById("eventImage");
+
+const imagePreview =
+  document.getElementById("imagePreview");
+
+const removeImage =
+  document.getElementById("removeImage");
+
+const removeImageLabel =
+  document.getElementById("removeImageLabel");
+
+const upcomingOptions =
+  document.getElementById("upcomingOptions");
+
+const completedOptions =
+  document.getElementById("completedOptions");
+
+const cancelEventBtn =
+  document.getElementById("cancelEventBtn");
+
+const saveEventBtn =
+  document.getElementById("saveEventBtn");
+
+const toast =
+  document.getElementById("toast");
 
 
-/* =========================================================
-   STATE
-========================================================= */
+/* ============================================================
+   HELPERS
+============================================================ */
 
-let conversations = [];
-
-let selectedConversation = null;
-
-let realtimeChannel = null;
-
-let loggedIn = false;
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-loginBtn.addEventListener(
-  "click",
-  login
-);
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
 
-passwordInput.addEventListener(
-  "keydown",
-  event => {
+function showToast(message, isError = false){
 
-    if (event.key === "Enter") {
+  toast.textContent = message;
 
-      login();
+  toast.classList.toggle(
+    "error",
+    isError
+  );
 
+  toast.classList.add("show");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer =
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2800);
+}
+
+
+function formatTime(value){
+
+  if(!value) return "";
+
+  const date = new Date(value);
+
+  return date.toLocaleString([], {
+    month:"short",
+    day:"numeric",
+    hour:"numeric",
+    minute:"2-digit"
+  });
+}
+
+
+function safeUrl(value){
+
+  if(!value) return "";
+
+  try{
+
+    const url =
+      new URL(value, window.location.href);
+
+    if(
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ){
+      return "";
     }
 
+    return url.href;
+
+  }catch{
+    return "";
+  }
+}
+
+
+/* ============================================================
+   LOGIN
+============================================================ */
+
+loginForm.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+    loginError.style.display = "none";
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const {
+      data,
+      error
+    } =
+      await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if(error){
+
+      loginError.textContent =
+        error.message;
+
+      loginError.style.display =
+        "block";
+
+      return;
+    }
+
+    await checkAdmin(data.user);
   }
 );
 
 
-async function login() {
+/* ============================================================
+   CHECK ADMIN
+============================================================ */
 
-  loginError.style.display = "none";
+async function checkAdmin(user){
 
-  const email =
-    emailInput.value.trim();
+  if(!user){
 
-  const password =
-    passwordInput.value;
-
-
-  if (!email || !password) {
-
-    loginError.textContent =
-      "Enter your email and password.";
-
-    loginError.style.display =
-      "block";
+    showLogin();
 
     return;
-
   }
-
-
-  loginBtn.disabled = true;
-
-  loginBtn.textContent =
-    "signing in...";
-
 
   const {
     data,
     error
   } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
+    await db.rpc("is_admin");
 
+  if(error || data !== true){
 
-  if (error) {
-
-    console.error(error);
+    await db.auth.signOut();
 
     loginError.textContent =
-      "Invalid email or password.";
+      "This account does not have admin access.";
 
     loginError.style.display =
       "block";
 
-    loginBtn.disabled = false;
-
-    loginBtn.textContent =
-      "sign in →";
+    showLogin();
 
     return;
-
   }
 
-
-  if (!data.session) {
-
-    loginError.textContent =
-      "Could not create a session.";
-
-    loginError.style.display =
-      "block";
-
-    loginBtn.disabled = false;
-
-    loginBtn.textContent =
-      "sign in →";
-
-    return;
-
-  }
-
-
-  loggedIn = true;
-
+  currentUser = user;
 
   loginScreen.style.display =
     "none";
@@ -1494,449 +1641,338 @@ async function login() {
   app.style.display =
     "flex";
 
-
   await loadConversations();
 
-  subscribeToRealtime();
+  await loadEvents();
 
+  subscribeRealtime();
 }
 
 
-/* =========================================================
-   LOAD CONVERSATIONS
-========================================================= */
+/* ============================================================
+   INITIAL SESSION
+============================================================ */
 
-async function loadConversations() {
+async function init(){
+
+  const {
+    data
+  } =
+    await db.auth.getSession();
+
+  if(data.session){
+
+    await checkAdmin(
+      data.session.user
+    );
+
+  }else{
+
+    showLogin();
+
+  }
+}
+
+
+function showLogin(){
+
+  loginScreen.style.display =
+    "grid";
+
+  app.style.display =
+    "none";
+}
+
+
+init();
+
+
+/* ============================================================
+   LOGOUT
+============================================================ */
+
+logoutBtn.addEventListener(
+  "click",
+  async () => {
+
+    if(realtimeChannel){
+
+      await db.removeChannel(
+        realtimeChannel
+      );
+
+      realtimeChannel = null;
+    }
+
+    await db.auth.signOut();
+
+    currentUser = null;
+
+    selectedConversation = null;
+
+    showLogin();
+  }
+);
+
+
+/* ============================================================
+   ADMIN NAVIGATION
+============================================================ */
+
+chatNav.addEventListener(
+  "click",
+  () => {
+
+    app.classList.remove(
+      "events-mode"
+    );
+
+    chatNav.classList.add(
+      "active"
+    );
+
+    eventsNav.classList.remove(
+      "active"
+    );
+
+  }
+);
+
+
+eventsNav.addEventListener(
+  "click",
+  async () => {
+
+    app.classList.add(
+      "events-mode"
+    );
+
+    eventsNav.classList.add(
+      "active"
+    );
+
+    chatNav.classList.remove(
+      "active"
+    );
+
+    await loadEvents();
+  }
+);
+
+
+/* ============================================================
+   CONVERSATIONS
+============================================================ */
+
+async function loadConversations(){
 
   const {
     data,
     error
   } =
-    await supabaseClient
+    await db
       .from("conversations")
       .select("*")
       .order(
         "updated_at",
-        {
-          ascending: false
-        }
+        { ascending:false }
       );
 
+  if(error){
 
-  if (error) {
+    console.error(error);
 
-    console.error(
-      "Conversation loading error:",
-      error
+    showToast(
+      "Could not load conversations.",
+      true
     );
 
-    conversationsEl.innerHTML = `
-      <div class="list-empty">
-        Could not load conversations.
-      </div>
-    `;
-
     return;
-
   }
-
 
   conversations =
     data || [];
 
-
-  renderConversations();
-
+  renderConversationList();
 }
 
 
-/* =========================================================
-   RENDER CONVERSATIONS
-========================================================= */
-
-function renderConversations() {
+function renderConversationList(){
 
   const query =
     searchInput.value
       .trim()
       .toLowerCase();
 
-
   const filtered =
-    conversations.filter(
-      conversation => {
+    conversations.filter(conversation => {
 
-        const name =
-          (
-            conversation.visitor_name ||
-            "Name missing"
-          ).toLowerCase();
+      if(!query) return true;
 
-        return name.includes(query);
+      return (
+        String(
+          conversation.visitor_name || ""
+        )
+          .toLowerCase()
+          .includes(query)
+        ||
+        String(
+          conversation.id
+        )
+          .toLowerCase()
+          .includes(query)
+      );
 
-      }
-    );
-
-
-  const active =
-    filtered.filter(
-      conversation =>
-        conversation.status !== "ended"
-    );
-
-
-  const archived =
-    filtered.filter(
-      conversation =>
-        conversation.status === "ended"
-    );
+    });
 
 
-  let html = "";
+  if(!filtered.length){
 
-
-  /* =======================================================
-     ACTIVE
-  ====================================================== */
-
-  html += `
-    <div class="section-title">
-      ACTIVE CHATS
-    </div>
-  `;
-
-
-  if (active.length === 0) {
-
-    html += `
-      <div class="list-empty">
-        No active chats.
+    conversationList.innerHTML = `
+      <div class="empty-list">
+        No conversations found.
       </div>
     `;
 
+    return;
   }
 
 
-  active.forEach(
-    conversation => {
+  conversationList.innerHTML =
+    filtered.map(conversation => {
 
-      html +=
-        conversationHTML(
-          conversation
-        );
+      const name =
+        conversation.visitor_name ||
+        "Anonymous visitor";
 
-    }
-  );
+      const active =
+        selectedConversation &&
+        selectedConversation.id ===
+        conversation.id;
 
+      const status =
+        conversation.status ||
+        "active";
 
-  /* =======================================================
-     ARCHIVE
-  ====================================================== */
+      return `
+        <div
+          class="conversation ${active ? "active" : ""}"
+          data-id="${escapeHtml(conversation.id)}"
+        >
 
-  html += `
-    <div class="section-title">
-      ARCHIVE
-    </div>
-  `;
+          <div class="conversation-name">
+            ${escapeHtml(name)}
+          </div>
 
+          <div class="conversation-preview">
+            ${escapeHtml(status)}
+          </div>
 
-  if (archived.length === 0) {
+          <div class="conversation-time">
+            ${formatTime(conversation.updated_at)}
+          </div>
 
-    html += `
-      <div class="list-empty">
-        No archived chats.
-      </div>
-    `;
+          <button
+            class="delete-small"
+            data-delete="${escapeHtml(conversation.id)}"
+            title="Delete conversation"
+          >
+            ×
+          </button>
 
-  }
-
-
-  archived.forEach(
-    conversation => {
-
-      html +=
-        conversationHTML(
-          conversation
-        );
-
-    }
-  );
-
-
-  conversationsEl.innerHTML =
-    html;
-
-
-  document
-    .querySelectorAll(
-      ".conversation"
-    )
-    .forEach(
-      element => {
-
-        element.addEventListener(
-          "click",
-          event => {
-
-            if (
-              event.target.closest(
-                ".delete-small"
-              )
-            ) {
-
-              return;
-
-            }
-
-
-            const id =
-              element.dataset.id;
-
-
-            const conversation =
-              conversations.find(
-                item =>
-                  item.id === id
-              );
-
-
-            if (conversation) {
-
-              openConversation(
-                conversation
-              );
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
-  document
-    .querySelectorAll(
-      ".delete-small"
-    )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          async event => {
-
-            event.stopPropagation();
-
-            const id =
-              button.dataset.id;
-
-            await deleteConversation(
-              id
-            );
-
-          }
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   CONVERSATION HTML
-========================================================= */
-
-function conversationHTML(
-  conversation
-) {
-
-  const name =
-    conversation.visitor_name ||
-    "Name missing";
-
-
-  const updated =
-    conversation.updated_at ||
-    conversation.created_at;
-
-
-  const time =
-    formatTime(updated);
-
-
-  const ended =
-    conversation.status ===
-    "ended";
-
-
-  const isActive =
-    selectedConversation &&
-    selectedConversation.id ===
-    conversation.id;
-
-
-  return `
-
-    <div
-      class="conversation ${isActive ? "active" : ""}"
-      data-id="${escapeHtml(conversation.id)}"
-    >
-
-      <div class="conversation-top">
-
-        <div class="visitor">
-          ${escapeHtml(name)}
         </div>
+      `;
 
-        <div class="time">
-          ${escapeHtml(time)}
-        </div>
-
-      </div>
+    }).join("");
 
 
-      <div class="preview">
+  conversationList
+    .querySelectorAll(".conversation")
+    .forEach(element => {
 
-        ${ended
-          ? "Chat ended"
-          : "Open conversation"
+      element.addEventListener(
+        "click",
+        event => {
+
+          if(
+            event.target.closest(
+              ".delete-small"
+            )
+          ){
+            return;
+          }
+
+          selectConversation(
+            element.dataset.id
+          );
         }
+      );
 
-      </div>
-
-
-      <span
-        class="conversation-status ${ended ? "ended" : ""}"
-      >
-
-        ${ended ? "ENDED" : "OPEN"}
-
-      </span>
+    });
 
 
-      <button
-        type="button"
-        class="delete-small"
-        data-id="${escapeHtml(conversation.id)}"
-        title="Delete chat"
-      >
-        🗑
-      </button>
+  conversationList
+    .querySelectorAll(".delete-small")
+    .forEach(button => {
 
-    </div>
+      button.addEventListener(
+        "click",
+        async event => {
 
-  `;
+          event.stopPropagation();
 
+          await deleteConversation(
+            button.dataset.delete
+          );
+
+        }
+      );
+
+    });
 }
 
 
-/* =========================================================
-   OPEN CONVERSATION
-========================================================= */
+searchInput.addEventListener(
+  "input",
+  renderConversationList
+);
 
-async function openConversation(
-  conversation
-) {
+
+/* ============================================================
+   SELECT CONVERSATION
+============================================================ */
+
+async function selectConversation(id){
+
+  const conversation =
+    conversations.find(
+      item => item.id === id
+    );
+
+  if(!conversation) return;
 
   selectedConversation =
     conversation;
 
+  renderConversationList();
 
-  renderConversations();
-
-
-  const name =
+  chatName.textContent =
     conversation.visitor_name ||
-    "Name missing";
+    "Anonymous visitor";
 
+  chatInfo.textContent =
+    `${conversation.id} · ${
+      conversation.status || "active"
+    }`;
 
-  chatTitleName.textContent =
-    name;
-
-
-  const ended =
-    conversation.status ===
-    "ended";
-
-
-  if (ended) {
-
-    chatStatus.textContent =
-      "Chat ended";
-
-  } else {
-
-    chatStatus.textContent =
-      "Live conversation";
-
-  }
-
-
-  endChatBtn.disabled =
-    ended;
-
-  deleteChatBtn.disabled =
-    false;
-
-
-  messageInput.disabled =
-    ended;
-
-  sendBtn.disabled =
-    ended;
-
-
-  quickReplyButtons.forEach(
-    button => {
-
-      button.disabled =
-        ended;
-
-    }
-  );
-
-
-  chatEndedBar.style.display =
-    ended
-      ? "block"
-      : "none";
-
-
-  if (ended) {
-
-    messageInput.placeholder =
-      "chat ended";
-
-  } else {
-
-    messageInput.placeholder =
-      "type a reply...";
-
-  }
-
-
-  await loadMessages(
-    conversation.id
-  );
-
-
-  messageInput.focus();
-
+  await loadMessages(id);
 }
 
 
-/* =========================================================
-   LOAD MESSAGES
-========================================================= */
-
-async function loadMessages(
-  conversationId
-) {
+async function loadMessages(conversationId){
 
   messagesEl.innerHTML = `
-    <div class="empty">
+    <div class="no-chat">
       Loading messages...
     </div>
   `;
@@ -1946,220 +1982,118 @@ async function loadMessages(
     data,
     error
   } =
-    await supabaseClient
+    await db
       .from("messages")
-      .select(
-        "id, conversation_id, sender, message, created_at"
-      )
+      .select("*")
       .eq(
         "conversation_id",
         conversationId
       )
       .order(
         "created_at",
-        {
-          ascending: true
-        }
+        { ascending:true }
       );
 
 
-  if (error) {
+  if(error){
 
-    console.error(
-      "Message loading error:",
-      error
-    );
+    console.error(error);
 
     messagesEl.innerHTML = `
-      <div class="empty">
+      <div class="no-chat">
         Could not load messages.
       </div>
     `;
 
     return;
-
   }
 
 
-  messagesEl.innerHTML = "";
+  renderMessages(data || []);
+}
 
 
-  if (!data || data.length === 0) {
+function renderMessages(messages){
+
+  if(!messages.length){
 
     messagesEl.innerHTML = `
-      <div class="empty">
+      <div class="no-chat">
         No messages yet.
       </div>
     `;
 
     return;
-
   }
 
 
-  data.forEach(
-    message => {
+  messagesEl.innerHTML =
+    messages.map(message => {
 
-      renderMessage(
-        message
-      );
+      const sender =
+        message.sender === "admin"
+          ? "admin"
+          : "visitor";
 
-    }
-  );
+      return `
+        <div class="message ${sender}">
+
+          <div>
+
+            <div class="message-bubble">
+              ${escapeHtml(message.message)}
+            </div>
+
+            <div class="message-meta">
+              ${sender}
+              ·
+              ${formatTime(message.created_at)}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
 
 
-  scrollMessages();
-
+  messagesEl.scrollTop =
+    messagesEl.scrollHeight;
 }
 
 
-/* =========================================================
-   RENDER MESSAGE
-========================================================= */
-
-function renderMessage(
-  message
-) {
-
-  const wrapper =
-    document.createElement(
-      "div"
-    );
-
-
-  wrapper.className =
-    `message ${
-      message.sender === "admin"
-        ? "admin"
-        : "visitor"
-    }`;
-
-
-  wrapper.dataset.id =
-    message.id;
-
-
-  const bubble =
-    document.createElement(
-      "div"
-    );
-
-
-  bubble.className =
-    "message-bubble";
-
-
-  bubble.textContent =
-    message.message;
-
-
-  const meta =
-    document.createElement(
-      "div"
-    );
-
-
-  meta.className =
-    "message-meta";
-
-
-  meta.textContent =
-    formatTime(
-      message.created_at
-    );
-
-
-  wrapper.appendChild(
-    bubble
-  );
-
-  wrapper.appendChild(
-    meta
-  );
-
-
-  messagesEl.appendChild(
-    wrapper
-  );
-
-}
-
-
-/* =========================================================
-   SEND NORMAL MESSAGE
-========================================================= */
-
-composer.addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-
-    if (
-      !selectedConversation ||
-      selectedConversation.status ===
-        "ended"
-    ) {
-
-      return;
-
-    }
-
-
-    const text =
-      messageInput.value.trim();
-
-
-    if (!text) {
-
-      return;
-
-    }
-
-
-    await sendAdminMessage(
-      text
-    );
-
-  }
-);
-
-
-/* =========================================================
+/* ============================================================
    SEND ADMIN MESSAGE
-========================================================= */
+============================================================ */
 
-async function sendAdminMessage(
-  text
-) {
+async function sendMessage(){
 
-  if (
-    !selectedConversation ||
-    selectedConversation.status ===
-      "ended"
-  ) {
+  if(!selectedConversation){
 
-    return false;
+    showToast(
+      "Select a conversation first.",
+      true
+    );
 
+    return;
   }
 
+  const text =
+    messageInput.value.trim();
 
-  messageInput.disabled =
-    true;
+  if(!text) return;
 
-  sendBtn.disabled =
-    true;
+
+  sendButton.disabled = true;
 
 
   const {
-    data,
     error
   } =
-    await supabaseClient
+    await db
       .from("messages")
       .insert({
-
         conversation_id:
           selectedConversation.id,
 
@@ -2168,488 +2102,1127 @@ async function sendAdminMessage(
 
         message:
           text
-
-      })
-      .select(
-        "id, conversation_id, sender, message, created_at"
-      )
-      .single();
+      });
 
 
-  if (error) {
+  sendButton.disabled = false;
 
-    console.error(
-      "Message send error:",
-      error
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message,
+      true
     );
 
-    alert(
-      "Could not send the message."
-    );
-
-    messageInput.disabled =
-      false;
-
-    sendBtn.disabled =
-      false;
-
-    return false;
-
+    return;
   }
 
 
-  /*
-    The realtime subscription will also
-    receive this message.
-
-    Only render it here if it isn't
-    already present.
-  */
-
-  if (
-    !document.querySelector(
-      `.message[data-id="${data.id}"]`
-    )
-  ) {
-
-    const empty =
-      messagesEl.querySelector(
-        ".empty"
-      );
-
-    if (empty) {
-
-      messagesEl.innerHTML = "";
-
-    }
-
-
-    renderMessage(
-      data
-    );
-
-    scrollMessages();
-
-  }
-
-
-  messageInput.value =
-    "";
-
-
-  messageInput.disabled =
-    false;
-
-  sendBtn.disabled =
-    false;
-
-
-  messageInput.focus();
-
-
-  return true;
-
+  messageInput.value = "";
 }
 
 
-/* =========================================================
-   QUICK REPLIES
-========================================================= */
-
-quickReplyButtons.forEach(
-  button => {
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        if (
-          !selectedConversation ||
-          selectedConversation.status ===
-            "ended"
-        ) {
-
-          return;
-
-        }
+sendButton.addEventListener(
+  "click",
+  sendMessage
+);
 
 
-        const message =
-          button.dataset.message;
+messageInput.addEventListener(
+  "keydown",
+  event => {
 
+    if(
+      event.key === "Enter" &&
+      !event.shiftKey
+    ){
 
-        if (!message) {
+      event.preventDefault();
 
-          return;
-
-        }
-
-
-        /*
-          Temporarily disable all quick
-          reply buttons to prevent
-          accidental double sending.
-        */
-
-        quickReplyButtons.forEach(
-          item => {
-
-            item.disabled = true;
-
-          }
-        );
-
-
-        await sendAdminMessage(
-          message
-        );
-
-
-        /*
-          Re-enable them if the chat
-          is still open.
-        */
-
-        if (
-          selectedConversation &&
-          selectedConversation.status !==
-            "ended"
-        ) {
-
-          quickReplyButtons.forEach(
-            item => {
-
-              item.disabled =
-                false;
-
-            }
-          );
-
-        }
-
-      }
-    );
+      sendMessage();
+    }
 
   }
 );
 
 
-/* =========================================================
+/* ============================================================
+   QUICK REPLIES
+============================================================ */
+
+document
+  .querySelectorAll(
+    ".quick-replies button"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        messageInput.value =
+          button.dataset.reply;
+
+        messageInput.focus();
+
+      }
+    );
+
+  });
+
+
+/* ============================================================
    END CHAT
-========================================================= */
+============================================================ */
 
 endChatBtn.addEventListener(
   "click",
   async () => {
 
-    if (
-      !selectedConversation ||
-      selectedConversation.status ===
-        "ended"
-    ) {
+    if(!selectedConversation){
 
-      return;
-
-    }
-
-
-    const confirmed =
-      confirm(
-        "End this chat? The visitor will be notified and will need to start a new chat to continue."
+      showToast(
+        "Select a conversation first.",
+        true
       );
 
-
-    if (!confirmed) {
-
       return;
-
     }
-
-
-    endChatBtn.disabled =
-      true;
-
-
-    const now =
-      new Date().toISOString();
 
 
     const {
-      data,
       error
     } =
-    await supabaseClient
-      .from("conversations")
-      .update({
-
-        status:
-          "ended",
-
-        ended_at:
-          now,
-
-        updated_at:
-          now
-
-      })
-      .eq(
-        "id",
-        selectedConversation.id
-      )
-      .select()
-      .single();
+      await db
+        .from("conversations")
+        .update({
+          status:"ended",
+          ended_at:new Date().toISOString()
+        })
+        .eq(
+          "id",
+          selectedConversation.id
+        );
 
 
-    if (error) {
+    if(error){
 
-      console.error(
-        "End chat error:",
-        error
+      showToast(
+        error.message,
+        true
       );
-
-      alert(
-        "Could not end the chat."
-      );
-
-      endChatBtn.disabled =
-        false;
 
       return;
-
     }
 
 
-    selectedConversation =
-      data;
+    showToast(
+      "Chat ended."
+    );
 
+    await loadConversations();
 
-    /*
-      Update local conversation.
-    */
-
-    const index =
-      conversations.findIndex(
+    const updated =
+      conversations.find(
         item =>
-          item.id === data.id
+          item.id ===
+          selectedConversation.id
       );
 
+    if(updated){
 
-    if (index !== -1) {
+      selectedConversation =
+        updated;
 
-      conversations[index] =
-        data;
-
+      chatInfo.textContent =
+        `${updated.id} · ${
+          updated.status || "ended"
+        }`;
     }
-
-
-    updateChatEndedUI();
-
-    renderConversations();
-
   }
 );
 
 
-/* =========================================================
-   UPDATE ENDED UI
-========================================================= */
-
-function updateChatEndedUI() {
-
-  if (
-    !selectedConversation
-  ) {
-
-    return;
-
-  }
-
-
-  chatStatus.textContent =
-    "Chat ended";
-
-
-  endChatBtn.disabled =
-    true;
-
-
-  messageInput.disabled =
-    true;
-
-
-  sendBtn.disabled =
-    true;
-
-
-  messageInput.placeholder =
-    "chat ended";
-
-
-  chatEndedBar.style.display =
-    "block";
-
-
-  quickReplyButtons.forEach(
-    button => {
-
-      button.disabled =
-        true;
-
-    }
-  );
-
-}
-
-
-/* =========================================================
+/* ============================================================
    DELETE CHAT
-========================================================= */
+============================================================ */
 
 deleteChatBtn.addEventListener(
   "click",
   async () => {
 
-    if (
-      !selectedConversation
-    ) {
+    if(!selectedConversation){
+
+      showToast(
+        "Select a conversation first.",
+        true
+      );
 
       return;
-
     }
-
 
     await deleteConversation(
       selectedConversation.id
     );
-
   }
 );
 
 
-async function deleteConversation(
-  conversationId
-) {
+async function deleteConversation(id){
 
-  const confirmed =
-    confirm(
-      "Delete this entire chat? This will permanently delete the conversation and all of its messages."
+  const conversation =
+    conversations.find(
+      item => item.id === id
     );
 
+  const name =
+    conversation?.visitor_name ||
+    "this conversation";
 
-  if (!confirmed) {
+
+  if(
+    !confirm(
+      `Delete ${name}?\n\nThis will permanently delete the conversation and its messages.`
+    )
+  ){
 
     return;
-
   }
 
 
   const {
     error
   } =
-    await supabaseClient
+    await db
       .from("conversations")
       .delete()
       .eq(
         "id",
-        conversationId
+        id
       );
 
 
-  if (error) {
+  if(error){
 
-    console.error(
-      "Delete error:",
-      error
-    );
+    console.error(error);
 
-    alert(
-      "Could not delete the chat."
+    showToast(
+      error.message,
+      true
     );
 
     return;
-
   }
 
 
-  conversations =
-    conversations.filter(
-      conversation =>
-        conversation.id !==
-        conversationId
-    );
-
-
-  if (
+  if(
     selectedConversation &&
-    selectedConversation.id ===
-      conversationId
-  ) {
+    selectedConversation.id === id
+  ){
 
     selectedConversation =
       null;
 
-
-    chatTitleName.textContent =
+    chatName.textContent =
       "Select a conversation";
 
-
-    chatStatus.textContent =
-      "Choose a visitor from the left.";
-
-
-    messagesEl.innerHTML = `
-      <div class="empty">
-        ➜ ~/poshkin/chat $<br>
-        select conversation_
-      </div>
-    `;
-
-
-    messageInput.value =
+    chatInfo.textContent =
       "";
 
-    messageInput.disabled =
-      true;
-
-    sendBtn.disabled =
-      true;
-
-    endChatBtn.disabled =
-      true;
-
-    deleteChatBtn.disabled =
-      true;
-
-    chatEndedBar.style.display =
-      "none";
-
-
-    quickReplyButtons.forEach(
-      button => {
-
-        button.disabled =
-          true;
-
-      }
-    );
-
+    messagesEl.innerHTML = `
+      <div class="no-chat">
+        Select a conversation to view messages.
+      </div>
+    `;
   }
 
 
-  renderConversations();
+  showToast(
+    "Conversation deleted."
+  );
+
+  await loadConversations();
+}
+
+
+/* ============================================================
+   EVENTS
+============================================================ */
+
+async function loadEvents(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("events")
+      .select("*")
+      .order(
+        "sort_order",
+        { ascending:true }
+      )
+      .order(
+        "created_at",
+        { ascending:true }
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    eventAdminList.innerHTML = `
+      <div class="empty-list">
+        Could not load events.<br><br>
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  events =
+    data || [];
+
+
+  /*
+    Keep completed events first,
+    matching your current events page.
+  */
+
+  events.sort((a,b) => {
+
+    const statusA =
+      a.status === "completed"
+        ? 0
+        : 1;
+
+    const statusB =
+      b.status === "completed"
+        ? 0
+        : 1;
+
+    if(statusA !== statusB){
+
+      return statusA - statusB;
+    }
+
+    return (
+      (a.sort_order || 0) -
+      (b.sort_order || 0)
+    );
+
+  });
+
+
+  renderEventAdminList();
+}
+
+
+function renderEventAdminList(){
+
+  if(!events.length){
+
+    eventAdminList.innerHTML = `
+      <div class="empty-list">
+        No events yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  eventAdminList.innerHTML =
+    events.map(event => {
+
+      const status =
+        event.status === "completed"
+          ? "completed"
+          : "upcoming";
+
+      const reveal =
+        event.reveal_mode === "secret"
+          ? " · secret"
+          : "";
+
+      const image =
+        event.image_url
+          ? " · image"
+          : "";
+
+      return `
+        <article
+          class="event-admin-card"
+          data-event-id="${escapeHtml(event.id)}"
+        >
+
+          <div class="event-admin-card-top">
+
+            <div>
+
+              <h3>
+                ${escapeHtml(event.title)}
+              </h3>
+
+              <div class="event-admin-meta">
+
+                ${escapeHtml(event.event_date)}
+                ·
+                ${escapeHtml(event.location)}
+
+                <br>
+
+                ${status}${reveal}${image}
+
+              </div>
+
+            </div>
+
+            <div class="event-status ${status}">
+              ${status.toUpperCase()}
+            </div>
+
+          </div>
+
+
+          <div class="event-admin-actions">
+
+            <button
+              type="button"
+              data-edit-event="${escapeHtml(event.id)}"
+            >
+              Edit
+            </button>
+
+            <button
+              class="delete-event"
+              type="button"
+              data-delete-event="${escapeHtml(event.id)}"
+            >
+              Delete
+            </button>
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+
+  eventAdminList
+    .querySelectorAll(
+      "[data-edit-event]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const event =
+            events.find(
+              item =>
+                item.id ===
+                button.dataset.editEvent
+            );
+
+          if(event){
+
+            openEventEditor(event);
+          }
+
+        }
+      );
+
+    });
+
+
+  eventAdminList
+    .querySelectorAll(
+      "[data-delete-event]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () =>
+          deleteEvent(
+            button.dataset.deleteEvent
+          )
+      );
+
+    });
+}
+
+
+/* ============================================================
+   NEW EVENT
+============================================================ */
+
+newEventBtn.addEventListener(
+  "click",
+  () => {
+
+    openEventEditor(null);
+
+  }
+);
+
+
+function openEventEditor(event){
+
+  editingEvent =
+    event;
+
+  editorEmpty.style.display =
+    "none";
+
+  eventForm.style.display =
+    "block";
+
+
+  if(!event){
+
+    editorTitle.textContent =
+      "New Event";
+
+    eventTitle.value =
+      "";
+
+    eventDate.value =
+      "";
+
+    eventLocation.value =
+      "";
+
+    eventDescription.value =
+      "";
+
+    eventIcon.value =
+      "";
+
+    eventStatus.value =
+      "upcoming";
+
+    eventRevealMode.value =
+      "normal";
+
+    eventSignup.value =
+      "";
+
+    eventImage.value =
+      "";
+
+    removeImage.checked =
+      false;
+
+    imagePreview.src =
+      "";
+
+    imagePreview.style.display =
+      "none";
+
+    removeImageLabel.style.display =
+      "none";
+
+    toggleEventFields();
+
+    return;
+  }
+
+
+  editorTitle.textContent =
+    "Edit Event";
+
+
+  eventTitle.value =
+    event.title || "";
+
+  eventDate.value =
+    event.event_date || "";
+
+  eventLocation.value =
+    event.location || "";
+
+  eventDescription.value =
+    event.description || "";
+
+  eventIcon.value =
+    event.icon || "";
+
+  eventStatus.value =
+    event.status || "upcoming";
+
+  eventRevealMode.value =
+    event.reveal_mode || "normal";
+
+  eventSignup.value =
+    event.signup_url || "";
+
+  eventImage.value =
+    "";
+
+  removeImage.checked =
+    false;
+
+
+  if(event.image_url){
+
+    const url =
+      safeUrl(event.image_url);
+
+    if(url){
+
+      imagePreview.src =
+        url;
+
+      imagePreview.style.display =
+        "block";
+
+      removeImageLabel.style.display =
+        "block";
+
+    }
+
+  }else{
+
+    imagePreview.src =
+      "";
+
+    imagePreview.style.display =
+      "none";
+
+    removeImageLabel.style.display =
+      "none";
+  }
+
+
+  toggleEventFields();
+}
+
+
+/* ============================================================
+   EVENT FIELD VISIBILITY
+============================================================ */
+
+eventStatus.addEventListener(
+  "change",
+  toggleEventFields
+);
+
+
+function toggleEventFields(){
+
+  const upcoming =
+    eventStatus.value ===
+    "upcoming";
+
+  upcomingOptions.style.display =
+    upcoming
+      ? "block"
+      : "none";
+
+  completedOptions.style.display =
+    upcoming
+      ? "none"
+      : "block";
 
 }
 
 
-/* =========================================================
+/* ============================================================
+   IMAGE PREVIEW
+============================================================ */
+
+eventImage.addEventListener(
+  "change",
+  () => {
+
+    const file =
+      eventImage.files?.[0];
+
+    if(!file){
+
+      if(
+        editingEvent &&
+        editingEvent.image_url
+      ){
+
+        imagePreview.src =
+          safeUrl(
+            editingEvent.image_url
+          );
+
+        imagePreview.style.display =
+          "block";
+
+      }
+
+      return;
+    }
+
+
+    const url =
+      URL.createObjectURL(file);
+
+    imagePreview.src =
+      url;
+
+    imagePreview.style.display =
+      "block";
+
+    removeImage.checked =
+      false;
+  }
+);
+
+
+/* ============================================================
+   CANCEL EVENT EDIT
+============================================================ */
+
+cancelEventBtn.addEventListener(
+  "click",
+  () => {
+
+    editingEvent =
+      null;
+
+    eventForm.style.display =
+      "none";
+
+    editorEmpty.style.display =
+      "block";
+
+  }
+);
+
+
+/* ============================================================
+   SAVE EVENT
+============================================================ */
+
+eventForm.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+    saveEventBtn.disabled =
+      true;
+
+    saveEventBtn.textContent =
+      "Saving...";
+
+
+    try{
+
+      const id =
+        editingEvent?.id ||
+        crypto.randomUUID();
+
+
+      const existingImageUrl =
+        editingEvent?.image_url ||
+        null;
+
+      const existingImagePath =
+        editingEvent?.image_path ||
+        null;
+
+
+      const payload = {
+
+        id,
+
+        title:
+          eventTitle.value.trim(),
+
+        event_date:
+          eventDate.value.trim(),
+
+        location:
+          eventLocation.value.trim(),
+
+        description:
+          eventDescription.value.trim(),
+
+        icon:
+          eventIcon.value.trim() ||
+          "01",
+
+        status:
+          eventStatus.value,
+
+        reveal_mode:
+          eventStatus.value === "upcoming"
+            ? eventRevealMode.value
+            : "normal",
+
+        signup_url:
+          eventSignup.value.trim() ||
+          null,
+
+        image_url:
+          existingImageUrl,
+
+        image_path:
+          existingImagePath
+
+      };
+
+
+      /* -----------------------------------------
+         CREATE / UPDATE DATABASE ROW
+      ----------------------------------------- */
+
+      let savedEvent;
+
+
+      if(editingEvent){
+
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("events")
+            .update(payload)
+            .eq(
+              "id",
+              id
+            )
+            .select()
+            .single();
+
+
+        if(error) throw error;
+
+        savedEvent =
+          data;
+
+      }else{
+
+        const {
+          data,
+          error
+        } =
+          await db
+            .from("events")
+            .insert(payload)
+            .select()
+            .single();
+
+
+        if(error) throw error;
+
+        savedEvent =
+          data;
+      }
+
+
+      /* -----------------------------------------
+         REMOVE EXISTING IMAGE
+      ----------------------------------------- */
+
+      if(
+        removeImage.checked &&
+        existingImagePath
+      ){
+
+        await db
+          .storage
+          .from("events")
+          .remove([
+            existingImagePath
+          ]);
+
+        savedEvent.image_url =
+          null;
+
+        savedEvent.image_path =
+          null;
+
+      }
+
+
+      /* -----------------------------------------
+         UPLOAD NEW IMAGE
+      ----------------------------------------- */
+
+      const file =
+        eventImage.files?.[0];
+
+
+      if(file){
+
+        const extension =
+          file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        const path =
+          `${id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+
+        const {
+          error:
+          uploadError
+        } =
+          await db
+            .storage
+            .from("events")
+            .upload(
+              path,
+              file,
+              {
+                upsert:false,
+                contentType:file.type
+              }
+            );
+
+
+        if(uploadError){
+
+          console.error(
+            uploadError
+          );
+
+          showToast(
+            "Event saved, but image upload failed.",
+            true
+          );
+
+        }else{
+
+          const {
+            data:
+            publicData
+          } =
+            db
+              .storage
+              .from("events")
+              .getPublicUrl(path);
+
+
+          const imageUrl =
+            publicData.publicUrl;
+
+
+          const {
+            error:
+            imageUpdateError
+          } =
+            await db
+              .from("events")
+              .update({
+                image_url:imageUrl,
+                image_path:path
+              })
+              .eq(
+                "id",
+                id
+              );
+
+
+          if(imageUpdateError){
+
+            throw imageUpdateError;
+          }
+
+
+          /*
+            Delete the previous image only after
+            the new one uploaded successfully.
+          */
+
+          if(
+            existingImagePath &&
+            existingImagePath !== path
+          ){
+
+            await db
+              .storage
+              .from("events")
+              .remove([
+                existingImagePath
+              ]);
+          }
+
+        }
+
+      }else if(
+        removeImage.checked &&
+        existingImagePath
+      ){
+
+        await db
+          .from("events")
+          .update({
+            image_url:null,
+            image_path:null
+          })
+          .eq(
+            "id",
+            id
+          );
+
+      }
+
+
+      showToast(
+        editingEvent
+          ? "Event updated."
+          : "Event created."
+      );
+
+
+      editingEvent =
+        null;
+
+      eventForm.style.display =
+        "none";
+
+      editorEmpty.style.display =
+        "block";
+
+
+      await loadEvents();
+
+    }catch(error){
+
+      console.error(error);
+
+      showToast(
+        error.message ||
+        "Could not save event.",
+        true
+      );
+
+    }finally{
+
+      saveEventBtn.disabled =
+        false;
+
+      saveEventBtn.textContent =
+        "Save Event";
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   DELETE EVENT
+============================================================ */
+
+async function deleteEvent(id){
+
+  const event =
+    events.find(
+      item =>
+        item.id === id
+    );
+
+  if(!event) return;
+
+
+  if(
+    !confirm(
+      `Delete "${event.title}"?\n\nThis will permanently remove the event.`
+    )
+  ){
+
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await db
+      .from("events")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    showToast(
+      error.message,
+      true
+    );
+
+    return;
+  }
+
+
+  /*
+    Remove the uploaded image after
+    deleting the event.
+  */
+
+  if(event.image_path){
+
+    await db
+      .storage
+      .from("events")
+      .remove([
+        event.image_path
+      ]);
+
+  }
+
+
+  if(
+    editingEvent &&
+    editingEvent.id === id
+  ){
+
+    editingEvent =
+      null;
+
+    eventForm.style.display =
+      "none";
+
+    editorEmpty.style.display =
+      "block";
+  }
+
+
+  showToast(
+    "Event deleted."
+  );
+
+
+  await loadEvents();
+}
+
+
+/* ============================================================
    REALTIME
-========================================================= */
+============================================================ */
 
-function subscribeToRealtime() {
+function subscribeRealtime(){
 
-  if (realtimeChannel) {
+  if(realtimeChannel){
 
-    supabaseClient.removeChannel(
+    db.removeChannel(
       realtimeChannel
     );
 
@@ -2657,497 +3230,142 @@ function subscribeToRealtime() {
 
 
   realtimeChannel =
-    supabaseClient
+    db
       .channel(
-        "admin-chat-realtime"
+        "poshkin-admin-realtime"
       )
 
-
-      /* -----------------------------------------------
-         CONVERSATION CHANGES
-      ----------------------------------------------- */
+      /* -----------------------------------------
+         CONVERSATIONS
+      ----------------------------------------- */
 
       .on(
         "postgres_changes",
         {
-          event: "*",
-          schema: "public",
-          table: "conversations"
+          event:"*",
+          schema:"public",
+          table:"conversations"
         },
-        payload => {
+        async payload => {
 
-          handleConversationChange(
-            payload
-          );
+          await loadConversations();
+
+
+          /*
+            If the currently selected conversation
+            was deleted, clear the chat.
+          */
+
+          if(
+            selectedConversation &&
+            payload.eventType === "DELETE" &&
+            payload.old?.id ===
+            selectedConversation.id
+          ){
+
+            selectedConversation =
+              null;
+
+            chatName.textContent =
+              "Select a conversation";
+
+            chatInfo.textContent =
+              "";
+
+            messagesEl.innerHTML = `
+              <div class="no-chat">
+                Select a conversation to view messages.
+              </div>
+            `;
+
+          }
 
         }
       )
 
 
-      /* -----------------------------------------------
-         MESSAGE INSERTS
-      ----------------------------------------------- */
+      /* -----------------------------------------
+         MESSAGES
+      ----------------------------------------- */
 
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
-          schema: "public",
-          table: "messages"
+          event:"INSERT",
+          schema:"public",
+          table:"messages"
         },
-        payload => {
+        async payload => {
 
-          handleNewMessage(
-            payload.new
-          );
+          if(
+            selectedConversation &&
+            payload.new.conversation_id ===
+            selectedConversation.id
+          ){
+
+            await loadMessages(
+              selectedConversation.id
+            );
+
+          }
+
+          await loadConversations();
+
+        }
+      )
+
+
+      /* -----------------------------------------
+         EVENTS
+      ----------------------------------------- */
+
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"events"
+        },
+        async () => {
+
+          await loadEvents();
 
         }
       )
 
 
       .subscribe();
-
 }
 
 
-/* =========================================================
-   HANDLE CONVERSATION REALTIME
-========================================================= */
+/* ============================================================
+   AUTH STATE CHANGES
+============================================================ */
 
-function handleConversationChange(
-  payload
-) {
+db.auth.onAuthStateChange(
+  async (_event, session) => {
 
-  if (
-    payload.eventType ===
-    "INSERT"
-  ) {
+    if(
+      session &&
+      !currentUser
+    ){
 
-    const exists =
-      conversations.some(
-        conversation =>
-          conversation.id ===
-          payload.new.id
+      /*
+        Delay slightly so Supabase has
+        finished establishing the session.
+      */
+
+      setTimeout(
+        () => checkAdmin(session.user),
+        0
       );
-
-
-    if (!exists) {
-
-      conversations.unshift(
-        payload.new
-      );
-
-    }
-
-  }
-
-
-  else if (
-    payload.eventType ===
-    "UPDATE"
-  ) {
-
-    const index =
-      conversations.findIndex(
-        conversation =>
-          conversation.id ===
-          payload.new.id
-      );
-
-
-    if (index !== -1) {
-
-      conversations[index] =
-        payload.new;
-
-    } else {
-
-      conversations.unshift(
-        payload.new
-      );
-
-    }
-
-
-    if (
-      selectedConversation &&
-      selectedConversation.id ===
-        payload.new.id
-    ) {
-
-      selectedConversation =
-        payload.new;
-
-
-      if (
-        payload.new.status ===
-        "ended"
-      ) {
-
-        updateChatEndedUI();
-
-      } else {
-
-        chatStatus.textContent =
-          "Live conversation";
-
-        endChatBtn.disabled =
-          false;
-
-        messageInput.disabled =
-          false;
-
-        sendBtn.disabled =
-          false;
-
-        messageInput.placeholder =
-          "type a reply...";
-
-        chatEndedBar.style.display =
-          "none";
-
-
-        quickReplyButtons.forEach(
-          button => {
-
-            button.disabled =
-              false;
-
-          }
-        );
-
-      }
-
-    }
-
-  }
-
-
-  else if (
-    payload.eventType ===
-    "DELETE"
-  ) {
-
-    conversations =
-      conversations.filter(
-        conversation =>
-          conversation.id !==
-          payload.old.id
-      );
-
-
-    if (
-      selectedConversation &&
-      selectedConversation.id ===
-        payload.old.id
-    ) {
-
-      selectedConversation =
-        null;
-
-
-      chatTitleName.textContent =
-        "Select a conversation";
-
-
-      chatStatus.textContent =
-        "Choose a visitor from the left.";
-
-
-      messagesEl.innerHTML = `
-        <div class="empty">
-          ➜ ~/poshkin/chat $<br>
-          select conversation_
-        </div>
-      `;
-
-
-      messageInput.value =
-        "";
-
-      messageInput.disabled =
-        true;
-
-      sendBtn.disabled =
-        true;
-
-      endChatBtn.disabled =
-        true;
-
-      deleteChatBtn.disabled =
-        true;
-
-      chatEndedBar.style.display =
-        "none";
-
-
-      quickReplyButtons.forEach(
-        button => {
-
-          button.disabled =
-            true;
-
-        }
-      );
-
-    }
-
-  }
-
-
-  /*
-    Always re-render so a chat ending,
-    being created, or being deleted
-    moves immediately.
-  */
-
-  renderConversations();
-
-}
-
-
-/* =========================================================
-   HANDLE NEW MESSAGE
-========================================================= */
-
-function handleNewMessage(
-  message
-) {
-
-  if (
-    !selectedConversation
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    message.conversation_id !==
-    selectedConversation.id
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-    Don't duplicate a message that
-    we already rendered.
-  */
-
-  if (
-    document.querySelector(
-      `.message[data-id="${message.id}"]`
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  const empty =
-    messagesEl.querySelector(
-      ".empty"
-    );
-
-
-  if (empty) {
-
-    messagesEl.innerHTML =
-      "";
-
-  }
-
-
-  renderMessage(
-    message
-  );
-
-
-  scrollMessages();
-
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-searchInput.addEventListener(
-  "input",
-  () => {
-
-    renderConversations();
-
-  }
-);
-
-
-/* =========================================================
-   ENTER TO SEND
-========================================================= */
-
-messageInput.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey
-    ) {
-
-      event.preventDefault();
-
-      composer.requestSubmit();
 
     }
 
   }
 );
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function formatTime(
-  timestamp
-) {
-
-  if (!timestamp) {
-
-    return "";
-
-  }
-
-
-  const date =
-    new Date(timestamp);
-
-
-  return date.toLocaleTimeString(
-    [],
-    {
-      hour: "numeric",
-      minute: "2-digit"
-    }
-  );
-
-}
-
-
-function scrollMessages() {
-
-  requestAnimationFrame(
-    () => {
-
-      messagesEl.scrollTop =
-        messagesEl.scrollHeight;
-
-    }
-  );
-
-}
-
-
-function escapeHtml(
-  value
-) {
-
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   AUTH SESSION CHECK
-========================================================= */
-
-async function checkExistingSession() {
-
-  const {
-    data
-  } =
-    await supabaseClient.auth.getSession();
-
-
-  if (
-    data &&
-    data.session
-  ) {
-
-    /*
-      Make sure the logged-in user
-      is actually an admin.
-    */
-
-    const {
-      data: isAdmin,
-      error
-    } =
-      await supabaseClient
-        .rpc("is_admin");
-
-
-    if (
-      !error &&
-      isAdmin === true
-    ) {
-
-      loggedIn =
-        true;
-
-      loginScreen.style.display =
-        "none";
-
-      app.style.display =
-        "flex";
-
-
-      await loadConversations();
-
-      subscribeToRealtime();
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   START
-========================================================= */
-
-checkExistingSession();
-
 
 </script>
 
 </body>
-
 </html>
