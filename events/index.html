@@ -3,110 +3,1232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap"
+  rel="stylesheet"
+>
+
+<link
+  href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap"
+  rel="stylesheet"
+>
+
 <link rel="stylesheet" href="../style.css">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+<link
+  rel="icon"
+  type="image/svg+xml"
+  href="../favicon.svg"
+>
 
 <title>Poshkin - Events</title>
-<meta name="description" content="Past and upcoming events from Fraser Hack Club — workshops, game jams, and Haven Vancouver.">
+
+<meta
+  name="description"
+  content="Past and upcoming events from Fraser Hack Club — workshops, game jams, and Haven Vancouver."
+>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<style>
+
+/* =========================================================
+   DYNAMIC EVENT CARDS
+========================================================= */
+
+.event-card{
+  position:relative;
+  background:var(--paper);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.8rem;
+  box-shadow:var(--hard);
+  overflow:hidden;
+
+  transition:
+    transform .15s,
+    box-shadow .15s;
+}
+
+.event-card:hover{
+  transform:translate(-3px,-3px);
+  box-shadow:9px 9px 0 var(--shadow);
+}
+
+
+/* =========================================================
+   COMPLETED EVENT WITH IMAGE
+========================================================= */
+
+/*
+   The image is completely invisible until hover.
+*/
+
+.event-card.has-hover-image .event-hover-photo{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  opacity:0;
+
+  transition:
+    opacity .35s ease;
+
+  z-index:0;
+
+  pointer-events:none;
+}
+
+
+/*
+   Dark layer over the image so text stays readable.
+*/
+
+.event-card.has-hover-image .event-image-overlay{
+  position:absolute;
+  inset:0;
+
+  background:rgba(0,0,0,.55);
+
+  opacity:0;
+
+  transition:
+    opacity .35s ease;
+
+  z-index:1;
+
+  pointer-events:none;
+}
+
+
+/*
+   Keep ALL card content above the image.
+*/
+
+.event-card.has-hover-image > :not(.event-hover-photo):not(.event-image-overlay){
+  position:relative;
+  z-index:2;
+}
+
+
+/*
+   HOVER — reveal the image.
+*/
+
+.event-card.has-hover-image:hover .event-hover-photo,
+.event-card.has-hover-image.tapped .event-hover-photo{
+  opacity:1;
+}
+
+.event-card.has-hover-image:hover .event-image-overlay,
+.event-card.has-hover-image.tapped .event-image-overlay{
+  opacity:1;
+}
+
+
+/* =========================================================
+   FLAG
+========================================================= */
+
+.event-card .flag{
+  z-index:5;
+}
+
+
+/* =========================================================
+   SECRET UPCOMING EVENT
+========================================================= */
+
+.event-card.secret-upcoming .event-secret{
+  position:relative;
+  z-index:2;
+
+  transition:
+    filter .5s ease,
+    opacity .5s ease;
+}
+
+
+.event-card.secret-upcoming .event-reveal-name{
+  position:absolute;
+
+  inset:0;
+
+  display:grid;
+  place-items:center;
+
+  text-align:center;
+
+  padding:2rem;
+
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:1.6rem;
+
+  color:var(--blue-light);
+
+  opacity:0;
+
+  transition:
+    opacity .4s ease;
+
+  pointer-events:none;
+
+  z-index:4;
+}
+
+
+.event-card.secret-upcoming .event-reveal-name small{
+  display:block;
+
+  margin-top:.35rem;
+
+  font-family:var(--mono);
+  font-size:.65rem;
+
+  color:var(--muted);
+}
+
+
+.event-card.secret-upcoming:hover .event-secret,
+.event-card.secret-upcoming.tapped .event-secret{
+  filter:blur(8px);
+  opacity:.28;
+}
+
+
+.event-card.secret-upcoming:hover .event-reveal-name,
+.event-card.secret-upcoming.tapped .event-reveal-name{
+  opacity:1;
+}
+
+
+/* =========================================================
+   NORMAL UPCOMING
+========================================================= */
+
+.event-card .upcoming-flag{
+  background:var(--blue-light);
+}
+
+
+/* =========================================================
+   EMPTY / ERROR
+========================================================= */
+
+.events-loading{
+  grid-column:1 / -1;
+
+  padding:3rem 1rem;
+
+  text-align:center;
+
+  color:var(--muted);
+
+  font-family:var(--mono);
+  font-size:.75rem;
+}
+
+
+/* =========================================================
+   MOBILE TAP SUPPORT
+========================================================= */
+
+@media (hover:none){
+
+  .event-card:hover{
+    transform:none;
+    box-shadow:var(--hard);
+  }
+
+  .event-card.has-hover-image.tapped{
+    transform:translate(-3px,-3px);
+    box-shadow:9px 9px 0 var(--shadow);
+  }
+
+}
+
+</style>
 </head>
+
+
 <body>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
 <nav>
+
   <div class="nav-inner">
-    <a class="prompt" href="../"><b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span></a>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
-    <div class="nav-links" id="navLinks">
-      <a href="../">home</a>
-      <a href="../about/">about</a>
-      <a href="./" class="active">events</a>
-      <a href="../contact/">contact</a>
+
+    <a
+      class="prompt"
+      href="../"
+    >
+      <b>➜</b>
+      ~/poshkin<span class="path"> $</span><span class="caret"></span>
+    </a>
+
+
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      aria-label="Menu"
+    >
+      <span></span>
+      <span></span>
+    </button>
+
+
+    <div
+      class="nav-links"
+      id="navLinks"
+    >
+
+      <a href="../">
+        home
+      </a>
+
+      <a href="../about/">
+        about
+      </a>
+
+      <a
+        href="./"
+        class="active"
+      >
+        events
+      </a>
+
+      <a href="../contact/">
+        contact
+      </a>
+
     </div>
+
+
     <div class="nav-socials">
-      <a class="discord-nav" href="../discord/" aria-label="Discord" title="Discord"><img src="https://cdn.simpleicons.org/discord/5865F2" alt=""></a>
-      <a class="instagram-nav" href="https://www.instagram.com/its_poshkin?stkn=MXhmb3FkOTRzOW04dQ%3D%3D&amp;utm_source=qr" aria-label="Instagram" title="Instagram" target="_blank" rel="noopener noreferrer"><img src="https://cdn.simpleicons.org/instagram/E4405F" alt=""></a>
-        <a class="github-nav" href="https://github.com/poshkin15" aria-label="GitHub" title="GitHub" target="_blank" rel="noopener noreferrer"><img src="https://cdn.simpleicons.org/github/FFFFFF" alt=""></a>
+
+      <a
+        class="discord-nav"
+        href="../discord/"
+        aria-label="Discord"
+        title="Discord"
+      >
+        <img
+          src="https://cdn.simpleicons.org/discord/5865F2"
+          alt=""
+        >
+      </a>
+
+
+      <a
+        class="instagram-nav"
+        href="https://www.instagram.com/its_poshkin?stkn=MXhmb3FkOTRzOW04dQ%3D%3D&amp;utm_source=qr"
+        aria-label="Instagram"
+        title="Instagram"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="https://cdn.simpleicons.org/instagram/E4405F"
+          alt=""
+        >
+      </a>
+
+
+      <a
+        class="github-nav"
+        href="https://github.com/poshkin15"
+        aria-label="GitHub"
+        title="GitHub"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="https://cdn.simpleicons.org/github/FFFFFF"
+          alt=""
+        >
+      </a>
+
     </div>
+
   </div>
+
 </nav>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
 
 <main class="wrap">
 
+
+  <!-- PAGE HEADER -->
+
   <section class="page-head reveal">
-    <div class="sec-label">ls -la ~/events</div>
-    <h1>Events</h1>
-    <p style="color:var(--muted);max-width:34rem;margin-top:.8rem">Workshops, game jams, and community meetups run with Fraser Hack Club — held across the Tri-Cities and Vancouver.</p>
+
+    <div class="sec-label">
+      ls -la ~/events
+    </div>
+
+    <h1>
+      Events
+    </h1>
+
+    <p
+      style="
+        color:var(--muted);
+        max-width:34rem;
+        margin-top:.8rem
+      "
+    >
+      Workshops, game jams, and community meetups run with Fraser Hack Club — held across the Tri-Cities and Vancouver.
+    </p>
+
   </section>
+
+
+  <!-- =======================================================
+       EVENTS GRID
+  ======================================================== -->
 
   <section style="padding-top:0">
-    <div class="grid">
 
-      <div class="card campfire-card reveal d1">
-        <img class="campfire-photo" src="../campfire.jpeg" alt="">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">01</div>
-        <h3>Campfire Vancouver</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">feb 28 – mar 1, 2026 · vancouver</p>
-        <p>Our largest event to date — a free 24-hour game jam for middle and high schoolers, run as part of Hack Club's worldwide Campfire. Workshops, free food, merch, and games shipped to itch.io.</p>
-      </div>
+    <div
+      class="grid"
+      id="eventsGrid"
+    >
 
-      <div class="card reveal d2">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">02</div>
-        <h3>Learn to Build a Website</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">aug 9–10, 2025 · tri-cities</p>
-        <p>A free, beginner-friendly workshop teaching middle and high school students to build a personal website. Saturday was online; Sunday met at Coquitlam Public Library. Participants who completed the workshop earned ice cream.</p>
-        <a class="card-link" href="https://fraserhackclub.fillout.com/t/4UMaXpFvVCus" target="_blank" rel="noopener">workshop signup ↗</a>
-      </div>
-
-      <div class="card reveal d3">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">03</div>
-        <h3>Personal Website</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">jan 18, 2025 · coquitlam</p>
-        <p>A free personal website workshop for Tri-Cities middle and high school students at Coquitlam Public Library's City Centre Branch. No experience was needed, and boba and snacks were provided.</p>
-        <a class="card-link" href="https://forms.gle/GoYAbQ6BRDo77Qb9" target="_blank" rel="noopener">workshop signup ↗</a>
-      </div>
-
-      <!-- UPCOMING: blurred secret event — tap/hover to reveal -->
-      <div class="card upcoming reveal">
-        <div class="secret">
-          <div class="icon">??</div>
-          <h3>?????</h3>
-          <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">coming soon · vancouver</p>
-          <p>Something big is in the works. Our team has been preparing behind the scenes for our most ambitious event yet. Details under wraps for now.</p>
-          <span class="mono-tag">upcoming</span>
-        </div>
-        <div class="reveal-name">Haven Vancouver<small>coming soon</small></div>
+      <div class="events-loading">
+        loading events...
       </div>
 
     </div>
+
   </section>
 
+
 </main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
 <footer>
-  <div class="foot-inner">
-    <div class="foot-path"><b>➜</b> ~/poshkin $ ls pages/ <span style="color:var(--muted)">→</span>
-      <a href="../" style="color:var(--muted);text-decoration:none">index</a> ·
-      <a href="../about/" style="color:var(--muted);text-decoration:none">about</a> ·
-      <a href="./" style="color:var(--muted);text-decoration:none">events</a> ·
-      <a href="../contact/" style="color:var(--muted);text-decoration:none">contact</a>
+
+  <div class="footer-inner">
+
+    <div class="footer-left">
+
+      <span>
+        © 2026 Poshkin Omer
+      </span>
+
     </div>
-    <div class="signature">
-      <span class="sig-label">Designed &amp; Built By</span>
-      <span class="sig-name">Poshkin Omer</span>
+
+
+    <div class="footer-right">
+
+      <a href="../">
+        home
+      </a>
+
+      <a href="../about/">
+        about
+      </a>
+
+      <a href="./">
+        events
+      </a>
+
+      <a href="../contact/">
+        contact
+      </a>
+
     </div>
+
   </div>
+
 </footer>
+
+
 <script>
-const btn=document.getElementById('menuBtn'),links=document.getElementById('navLinks');
-btn.addEventListener('click',()=>links.classList.toggle('open'));
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-const mq=document.getElementById('marquee');if(mq)mq.innerHTML+=mq.innerHTML;
-document.querySelectorAll('.upcoming').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('tapped')));
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://zrxculnvhdnqvdhrfays.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_-iZ0ectVl2b38oSSuIUAXA_7sNYaQzA";
+
+const {
+  createClient
+} = supabase;
+
+const db =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const eventsGrid =
+  document.getElementById("eventsGrid");
+
+const menuBtn =
+  document.getElementById("menuBtn");
+
+const navLinks =
+  document.getElementById("navLinks");
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+if(menuBtn){
+
+  menuBtn.addEventListener(
+    "click",
+    () => {
+
+      navLinks.classList.toggle(
+        "open"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+  return String(
+    value ?? ""
+  )
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   SAFE URL
+========================================================= */
+
+function safeUrl(value){
+
+  if(!value){
+    return "";
+  }
+
+  try{
+
+    /*
+      Allows both:
+      https://...
+      ../campfire.jpeg
+      /campfire.jpeg
+    */
+
+    const url =
+      new URL(
+        value,
+        window.location.href
+      );
+
+
+    if(
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ){
+
+      return "";
+
+    }
+
+
+    return url.href;
+
+  }catch{
+
+    return "";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD EVENTS
+========================================================= */
+
+async function loadEvents(){
+
+  eventsGrid.innerHTML = `
+    <div class="events-loading">
+      loading events...
+    </div>
+  `;
+
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("events")
+      .select("*")
+      .order(
+        "sort_order",
+        {
+          ascending:true
+        }
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    console.error(
+      "Events error:",
+      error
+    );
+
+
+    eventsGrid.innerHTML = `
+      <div class="events-loading">
+        unable to load events
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if(!data || !data.length){
+
+    eventsGrid.innerHTML = `
+      <div class="events-loading">
+        no events yet
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /*
+    Completed events first,
+    matching your original page.
+  */
+
+  const sortedEvents =
+    [...data].sort(
+      (a,b) => {
+
+        const aStatus =
+          a.status === "completed"
+            ? 0
+            : 1;
+
+        const bStatus =
+          b.status === "completed"
+            ? 0
+            : 1;
+
+
+        if(
+          aStatus !== bStatus
+        ){
+
+          return (
+            aStatus -
+            bStatus
+          );
+
+        }
+
+
+        return (
+          (a.sort_order || 0) -
+          (b.sort_order || 0)
+        );
+
+      }
+    );
+
+
+  eventsGrid.innerHTML =
+    sortedEvents
+      .map(
+        renderEvent
+      )
+      .join("");
+
+
+  attachEventInteractions();
+
+}
+
+
+/* =========================================================
+   RENDER EVENT
+========================================================= */
+
+function renderEvent(event){
+
+  const title =
+    escapeHtml(
+      event.title
+    );
+
+  const date =
+    escapeHtml(
+      event.event_date
+    );
+
+  const location =
+    escapeHtml(
+      event.location
+    );
+
+  const description =
+    escapeHtml(
+      event.description
+    );
+
+  const icon =
+    escapeHtml(
+      event.icon ||
+      "01"
+    );
+
+
+  const isCompleted =
+    event.status ===
+    "completed";
+
+
+  const isSecret =
+    !isCompleted &&
+    event.reveal_mode ===
+    "secret";
+
+
+  const imageUrl =
+    safeUrl(
+      event.image_url
+    );
+
+
+  /* =======================================================
+     COMPLETED + IMAGE
+  ======================================================== */
+
+  if(
+    isCompleted &&
+    imageUrl
+  ){
+
+    const signupUrl =
+      safeUrl(
+        event.signup_url
+      );
+
+
+    return `
+
+      <article
+        class="card event-card has-hover-image reveal"
+      >
+
+        <!-- HIDDEN HOVER IMAGE -->
+
+        <img
+          class="event-hover-photo"
+          src="${escapeHtml(imageUrl)}"
+          alt=""
+          aria-hidden="true"
+        >
+
+
+        <!-- DARK IMAGE OVERLAY -->
+
+        <div
+          class="event-image-overlay"
+          aria-hidden="true"
+        ></div>
+
+
+        <!-- STATUS -->
+
+        <div class="flag">
+          COMPLETED
+        </div>
+
+
+        <!-- ICON -->
+
+        <div class="icon">
+          ${icon}
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h3>
+          ${title}
+        </h3>
+
+
+        <!-- DATE -->
+
+        <p
+          style="
+            font-family:var(--mono);
+            font-size:.72rem;
+            color:var(--muted);
+            margin-bottom:.5rem
+          "
+        >
+          ${date} · ${location}
+        </p>
+
+
+        <!-- DESCRIPTION -->
+
+        <p>
+          ${description}
+        </p>
+
+
+        ${
+          signupUrl
+            ? `
+              <a
+                class="card-link"
+                href="${escapeHtml(signupUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                workshop signup ↗
+              </a>
+            `
+            : ""
+        }
+
+      </article>
+
+    `;
+
+  }
+
+
+  /* =======================================================
+     SECRET UPCOMING
+  ======================================================== */
+
+  if(isSecret){
+
+    return `
+
+      <article
+        class="card event-card secret-upcoming reveal"
+      >
+
+        <div class="event-secret">
+
+          <div class="icon">
+            ${icon}
+          </div>
+
+
+          <h3>
+            ?????
+          </h3>
+
+
+          <p
+            style="
+              font-family:var(--mono);
+              font-size:.72rem;
+              color:var(--muted);
+              margin-bottom:.5rem
+            "
+          >
+            ${date} · ${location}
+          </p>
+
+
+          <p>
+            ${description}
+          </p>
+
+
+          <span class="mono-tag">
+            upcoming
+          </span>
+
+        </div>
+
+
+        <div class="event-reveal-name">
+
+          <div>
+
+            ${title}
+
+            <small>
+              coming soon
+            </small>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    `;
+
+  }
+
+
+  /* =======================================================
+     NORMAL UPCOMING
+  ======================================================== */
+
+  if(!isCompleted){
+
+    const signupUrl =
+      safeUrl(
+        event.signup_url
+      );
+
+
+    return `
+
+      <article
+        class="card event-card reveal"
+      >
+
+        <div class="flag upcoming-flag">
+          UPCOMING
+        </div>
+
+
+        <div class="icon">
+          ${icon}
+        </div>
+
+
+        <h3>
+          ${title}
+        </h3>
+
+
+        <p
+          style="
+            font-family:var(--mono);
+            font-size:.72rem;
+            color:var(--muted);
+            margin-bottom:.5rem
+          "
+        >
+          ${date} · ${location}
+        </p>
+
+
+        <p>
+          ${description}
+        </p>
+
+
+        ${
+          signupUrl
+            ? `
+              <a
+                class="card-link"
+                href="${escapeHtml(signupUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                workshop signup ↗
+              </a>
+            `
+            : ""
+        }
+
+      </article>
+
+    `;
+
+  }
+
+
+  /* =======================================================
+     COMPLETED WITHOUT IMAGE
+  ======================================================== */
+
+  const signupUrl =
+    safeUrl(
+      event.signup_url
+    );
+
+
+  return `
+
+    <article
+      class="card event-card reveal"
+    >
+
+      <div class="flag">
+        COMPLETED
+      </div>
+
+
+      <div class="icon">
+        ${icon}
+      </div>
+
+
+      <h3>
+        ${title}
+      </h3>
+
+
+      <p
+        style="
+          font-family:var(--mono);
+          font-size:.72rem;
+          color:var(--muted);
+          margin-bottom:.5rem
+        "
+      >
+        ${date} · ${location}
+      </p>
+
+
+      <p>
+        ${description}
+      </p>
+
+
+      ${
+        signupUrl
+          ? `
+            <a
+              class="card-link"
+              href="${escapeHtml(signupUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              workshop signup ↗
+            </a>
+          `
+          : ""
+      }
+
+    </article>
+
+  `;
+
+}
+
+
+/* =========================================================
+   TAP / HOVER INTERACTIONS
+========================================================= */
+
+function attachEventInteractions(){
+
+  document
+    .querySelectorAll(
+      ".event-card.has-hover-image, .event-card.secret-upcoming"
+    )
+    .forEach(card => {
+
+      card.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Don't trigger the card effect
+            when clicking a signup link.
+          */
+
+          if(
+            event.target.closest("a")
+          ){
+
+            return;
+
+          }
+
+
+          card.classList.toggle(
+            "tapped"
+          );
+
+        }
+      );
+
+    });
+
+
+  /*
+    Intersection reveal animation
+  */
+
+  const observer =
+    new IntersectionObserver(
+      entries => {
+
+        entries.forEach(
+          entry => {
+
+            if(
+              entry.isIntersecting
+            ){
+
+              entry.target.classList.add(
+                "visible"
+              );
+
+              observer.unobserve(
+                entry.target
+              );
+
+            }
+
+          }
+        );
+
+      },
+      {
+        threshold:.1
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      ".reveal"
+    )
+    .forEach(
+      element =>
+        observer.observe(
+          element
+        )
+    );
+
+}
+
+
+/* =========================================================
+   REALTIME EVENT UPDATES
+========================================================= */
+
+const eventChannel =
+  db
+    .channel(
+      "public-events-page"
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"events"
+      },
+      () => {
+
+        loadEvents();
+
+      }
+    )
+
+    .subscribe();
+
+
+/* =========================================================
+   LOAD
+========================================================= */
+
+loadEvents();
+
+
+/* =========================================================
+   MARQUEE SUPPORT
+========================================================= */
+
+const marquee =
+  document.getElementById(
+    "marquee"
+  );
+
+if(marquee){
+
+  marquee.innerHTML +=
+    marquee.innerHTML;
+
+}
+
 </script>
 
 </body>
