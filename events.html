@@ -1,112 +1,789 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
 
-<title>~/poshkin — events</title>
-<meta name="description" content="Past and upcoming events from Fraser Hack Club — workshops, game jams, and Haven Vancouver.">
+<link
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap"
+  rel="stylesheet"
+>
+
+<link
+  href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=general-sans@400,500,600&display=swap"
+  rel="stylesheet"
+>
+
+<link rel="stylesheet" href="../style.css">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+<title>Poshkin - Events</title>
+
+<meta
+  name="description"
+  content="Past and upcoming events from Fraser Hack Club — workshops, game jams, and Haven Vancouver."
+>
+
 </head>
+
 <body>
+
 <nav>
+
   <div class="nav-inner">
-    <a class="prompt" href="index.html"><b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span></a>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
+
+    <a class="prompt" href="../">
+      <b>➜</b> ~/poshkin<span class="path"> $</span><span class="caret"></span>
+    </a>
+
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      aria-label="Menu"
+    >
+      <span></span>
+      <span></span>
+    </button>
+
     <div class="nav-links" id="navLinks">
-      <a href="index.html">home</a>
-      <a href="about.html">about</a>
-      <a href="events.html" class="active">events</a>
-      <a href="contact.html">contact</a>
+
+      <a href="../">home</a>
+
+      <a href="../about/">about</a>
+
+      <a href="./" class="active">events</a>
+
+      <a href="../contact/">contact</a>
+
     </div>
+
+    <div class="nav-socials">
+
+      <a
+        class="discord-nav"
+        href="../discord/"
+        aria-label="Discord"
+        title="Discord"
+      >
+        <img
+          src="https://cdn.simpleicons.org/discord/5865F2"
+          alt=""
+        >
+      </a>
+
+      <a
+        class="instagram-nav"
+        href="https://www.instagram.com/its_poshkin?stkn=MXhmb3FkOTRzOW04dQ%3D%3D&amp;utm_source=qr"
+        aria-label="Instagram"
+        title="Instagram"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="https://cdn.simpleicons.org/instagram/E4405F"
+          alt=""
+        >
+      </a>
+
+      <a
+        class="github-nav"
+        href="https://github.com/poshkin15"
+        aria-label="GitHub"
+        title="GitHub"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="https://cdn.simpleicons.org/github/FFFFFF"
+          alt=""
+        >
+      </a>
+
+    </div>
+
   </div>
+
 </nav>
+
 
 <main class="wrap">
 
   <section class="page-head reveal">
-    <div class="sec-label">ls -la ~/events</div>
+
+    <div class="sec-label">
+      ls -la ~/events
+    </div>
+
     <h1>Events</h1>
-    <p style="color:var(--muted);max-width:34rem;margin-top:.8rem">Workshops, game jams, and community meetups run with Fraser Hack Club — held across the Tri-Cities and Vancouver.</p>
+
+    <p
+      style="
+        color:var(--muted);
+        max-width:34rem;
+        margin-top:.8rem
+      "
+    >
+      Workshops, game jams, and community meetups run with Fraser Hack Club
+      — held across the Tri-Cities and Vancouver.
+    </p>
+
   </section>
 
+
   <section style="padding-top:0">
-    <div class="grid">
 
-      <div class="card campfire-card reveal d1">
-        <img class="campfire-photo" src="campfire.jpeg" alt="">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">01</div>
-        <h3>Campfire Vancouver</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">feb 28 – mar 1, 2026 · vancouver</p>
-        <p>Our largest event to date — a free 24-hour game jam for middle and high schoolers, run as part of Hack Club's worldwide Campfire. Workshops, free food, merch, and games shipped to itch.io.</p>
-      </div>
+    <div
+      class="grid"
+      id="eventsGrid"
+    >
 
-      <div class="card reveal d2">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">02</div>
-        <h3>Learn to Build a Website</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">aug 9–10, 2025 · tri-cities</p>
-        <p>A free, beginner-friendly workshop teaching middle and high school students to build a personal website. Saturday was online; Sunday met at Coquitlam Public Library. Participants who completed the workshop earned ice cream.</p>
-        <a class="card-link" href="https://fraserhackclub.fillout.com/t/4UMaXpFvVCus" target="_blank" rel="noopener">workshop signup ↗</a>
-      </div>
+      <div class="card">
 
-      <div class="card reveal d3">
-        <div class="flag">COMPLETED</div>
-        <div class="icon">03</div>
-        <h3>Personal Website</h3>
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">jan 18, 2025 · coquitlam</p>
-        <p>A free personal website workshop for Tri-Cities middle and high school students at Coquitlam Public Library's City Centre Branch. No experience was needed, and boba and snacks were provided.</p>
-        <a class="card-link" href="https://forms.gle/GoYAbQ6BRDo77Qb9" target="_blank" rel="noopener">workshop signup ↗</a>
-      </div>
+        <div class="empty-event">
 
-      <!-- UPCOMING: blurred secret event — tap/hover to reveal -->
-      <div class="card upcoming reveal">
-        <div class="secret">
-          <div class="icon">??</div>
-          <h3>?????</h3>
-          <p style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:.5rem">coming soon · vancouver</p>
-          <p>Something big is in the works. Our team has been preparing behind the scenes for our most ambitious event yet. Details under wraps for now.</p>
-          <span class="mono-tag">upcoming</span>
+          <div class="icon">...</div>
+
+          <h3>Loading events</h3>
+
+          <p>
+            Fetching events...
+          </p>
+
         </div>
-        <div class="reveal-name">Haven Vancouver<small>coming soon</small></div>
+
       </div>
 
     </div>
+
   </section>
 
 </main>
+
+
 <footer>
+
   <div class="foot-inner">
-    <div class="foot-path"><b>➜</b> ~/poshkin $ ls pages/ <span style="color:var(--muted)">→</span>
-      <a href="index.html" style="color:var(--muted);text-decoration:none">index</a> ·
-      <a href="about.html" style="color:var(--muted);text-decoration:none">about</a> ·
-      <a href="events.html" style="color:var(--muted);text-decoration:none">events</a> ·
-      <a href="contact.html" style="color:var(--muted);text-decoration:none">contact</a>
+
+    <div class="foot-path">
+
+      <b>➜</b> ~/poshkin $ ls pages/
+
+      <span style="color:var(--muted)">→</span>
+
+      <a
+        href="../"
+        style="color:var(--muted);text-decoration:none"
+      >
+        index
+      </a>
+
+      ·
+
+      <a
+        href="../about/"
+        style="color:var(--muted);text-decoration:none"
+      >
+        about
+      </a>
+
+      ·
+
+      <a
+        href="./"
+        style="color:var(--muted);text-decoration:none"
+      >
+        events
+      </a>
+
+      ·
+
+      <a
+        href="../contact/"
+        style="color:var(--muted);text-decoration:none"
+      >
+        contact
+      </a>
+
     </div>
-    <!-- ✂ SIGNATURE — copy this block onto any website you build -->
+
     <div class="signature">
-      <span class="sig-label">Designed &amp; Built By</span>
-      <span class="sig-name">Poshkin Omer</span>
+
+      <span class="sig-label">
+        Designed &amp; Built By
+      </span>
+
+      <span class="sig-name">
+        Poshkin Omer
+      </span>
+
     </div>
-    <!-- ✂ END SIGNATURE -->
+
   </div>
+
 </footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-/* mobile menu */
-const btn=document.getElementById('menuBtn'),links=document.getElementById('navLinks');
-btn.addEventListener('click',()=>links.classList.toggle('open'));
-/* scroll reveal */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-/* marquee loop */
-const mq=document.getElementById('marquee');if(mq)mq.innerHTML+=mq.innerHTML;
-/* touch: tap to unblur upcoming event */
-document.querySelectorAll('.upcoming').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('tapped')));
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://zrxculnvhdnqvdhrfays.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_-iZ0ectVl2b38oSSuIUAXA_7sNYaQzA";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const eventsGrid =
+  document.getElementById("eventsGrid");
+
+const menuBtn =
+  document.getElementById("menuBtn");
+
+const navLinks =
+  document.getElementById("navLinks");
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+menuBtn.addEventListener(
+  "click",
+  () => {
+
+    navLinks.classList.toggle("open");
+
+  }
+);
+
+
+/* =========================================================
+   LOAD EVENTS
+========================================================= */
+
+async function loadEvents() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("events")
+      .select("*")
+      .order(
+        "event_number",
+        {
+          ascending:true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Events loading error:",
+      error
+    );
+
+    eventsGrid.innerHTML = `
+
+      <div class="card">
+
+        <div class="icon">!</div>
+
+        <h3>Could not load events</h3>
+
+        <p>
+          Please try again later.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  renderEvents(
+    data || []
+  );
+
+}
+
+
+/* =========================================================
+   RENDER EVENTS
+========================================================= */
+
+function renderEvents(
+  events
+) {
+
+  if (!events.length) {
+
+    eventsGrid.innerHTML = `
+
+      <div class="card">
+
+        <div class="icon">--</div>
+
+        <h3>No events yet</h3>
+
+        <p>
+          Check back soon for upcoming events.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  eventsGrid.innerHTML =
+    events
+      .map(
+        event => eventHTML(event)
+      )
+      .join("");
+
+
+  setupRevealAnimations();
+
+  setupUpcomingTaps();
+
+}
+
+
+/* =========================================================
+   EVENT HTML
+========================================================= */
+
+function eventHTML(
+  event
+) {
+
+  const number =
+    String(
+      event.event_number
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dateLocation =
+    `${escapeHtml(event.date_text)} · ${escapeHtml(event.location)}`;
+
+
+  /* =======================================================
+     COMPLETED
+  ====================================================== */
+
+  if (
+    event.event_type ===
+    "completed"
+  ) {
+
+    const hasImage =
+      Boolean(
+        event.hover_image_url
+      );
+
+
+    return `
+
+      <div
+        class="
+          card
+          completed-card
+          reveal
+          has-hover-image
+        "
+      >
+
+        ${
+          hasImage
+            ? `
+              <img
+                class="event-hover-photo"
+                src="${escapeAttribute(event.hover_image_url)}"
+                alt=""
+              >
+            `
+            : ""
+        }
+
+
+        <div class="flag">
+          COMPLETED
+        </div>
+
+
+        <div class="icon">
+          ${number}
+        </div>
+
+
+        <h3>
+          ${escapeHtml(event.title)}
+        </h3>
+
+
+        <p
+          style="
+            font-family:var(--mono);
+            font-size:.72rem;
+            color:var(--muted);
+            margin-bottom:.5rem
+          "
+        >
+          ${dateLocation}
+        </p>
+
+
+        <p>
+          ${escapeHtml(event.description)}
+        </p>
+
+
+        ${
+          event.signup_url
+            ? `
+              <a
+                class="card-link"
+                href="${escapeAttribute(event.signup_url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                workshop signup ↗
+              </a>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =======================================================
+     UPCOMING REVEAL
+  ====================================================== */
+
+  if (
+    event.event_type ===
+    "upcoming_reveal"
+  ) {
+
+    return `
+
+      <div class="card upcoming reveal">
+
+        <div class="secret">
+
+          <div class="icon">
+            ${number}
+          </div>
+
+          <h3>
+            ${escapeHtml(
+              event.hidden_title ||
+              "?????"
+            )}
+          </h3>
+
+          <p
+            style="
+              font-family:var(--mono);
+              font-size:.72rem;
+              color:var(--muted);
+              margin-bottom:.5rem
+            "
+          >
+            ${dateLocation}
+          </p>
+
+          <p>
+            ${escapeHtml(event.description)}
+          </p>
+
+          <span class="mono-tag">
+            upcoming
+          </span>
+
+        </div>
+
+
+        <div class="reveal-name">
+
+          <div>
+
+            ${escapeHtml(
+              event.reveal_title ||
+              event.title
+            )}
+
+            <small>
+              ${escapeHtml(
+                event.reveal_subtitle ||
+                "coming soon"
+              )}
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =======================================================
+     NORMAL UPCOMING
+  ====================================================== */
+
+  return `
+
+    <div class="card normal-upcoming reveal">
+
+      <div class="icon">
+        ${number}
+      </div>
+
+      <h3>
+        ${escapeHtml(event.title)}
+      </h3>
+
+      <p
+        style="
+          font-family:var(--mono);
+          font-size:.72rem;
+          color:var(--muted);
+          margin-bottom:.5rem
+        "
+      >
+        ${dateLocation}
+      </p>
+
+      <p>
+        ${escapeHtml(event.description)}
+      </p>
+
+
+      <span class="mono-tag">
+        upcoming
+      </span>
+
+
+      ${
+        event.signup_url
+          ? `
+            <a
+              class="card-link"
+              href="${escapeAttribute(event.signup_url)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              workshop signup ↗
+            </a>
+          `
+          : ""
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   UPCOMING MOBILE TAP
+========================================================= */
+
+function setupUpcomingTaps() {
+
+  document
+    .querySelectorAll(".upcoming")
+    .forEach(
+      card => {
+
+        card.addEventListener(
+          "click",
+          () => {
+
+            card.classList.toggle(
+              "tapped"
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   REVEAL ANIMATION
+========================================================= */
+
+function setupRevealAnimations() {
+
+  const io =
+    new IntersectionObserver(
+      entries => {
+
+        entries.forEach(
+          entry => {
+
+            if (
+              entry.isIntersecting
+            ) {
+
+              entry.target.classList.add(
+                "visible"
+              );
+
+              io.unobserve(
+                entry.target
+              );
+
+            }
+
+          }
+        );
+
+      },
+      {
+        threshold:.1
+      }
+    );
+
+
+  document
+    .querySelectorAll(".reveal")
+    .forEach(
+      element => {
+
+        io.observe(
+          element
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   REALTIME EVENTS
+========================================================= */
+
+const eventsChannel =
+  supabaseClient
+    .channel(
+      "public-events-realtime"
+    )
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"events"
+      },
+      payload => {
+
+        loadEvents();
+
+      }
+    )
+    .subscribe();
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttribute(
+  value
+) {
+
+  return escapeHtml(
+    value
+  );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+loadEvents();
+
 </script>
 
 </body>
